@@ -1,35 +1,35 @@
 //====================================================================================================================================
-	// Step 3-3 : ÆÄÀÏ·µ(Pilot)¿¡ ´ëÇÑ ¾÷±×·¹ÀÌµå °¡´É ¿©ºÎ È®ÀÎ ¹× ¾÷±×·¹ÀÌµå
+	// Step 3-3 : íŒŒì¼ëŸ¿(Pilot)ì— ëŒ€í•œ ì—…ê·¸ë ˆì´ë“œ ê°€ëŠ¥ ì—¬ë¶€ í™•ì¸ ë° ì—…ê·¸ë ˆì´ë“œ
 	//====================================================================================================================================
 	
-	else if( $UpgradeItemType == "Pilot" )		// ÆÄÀÏ·µ ¾÷±×·¹ÀÌµå´Ù.
+	else if( $UpgradeItemType == "Pilot" )		// íŒŒì¼ëŸ¿ ì—…ê·¸ë ˆì´ë“œë‹¤.
 	{
 		$CurrentPilotageLevel	= $PlayerObject->GetPlayerData()->_Inven['PilotageLevel_'.$UpgradeItemId];
 		$CurrentEvadeLevel		= $PlayerObject->GetPlayerData()->_Inven['EvadeLevel_'.$UpgradeItemId];
 		$CurItem				= $ItemManager->GetItem($UpgradeItemId);
-		$MaxUpgradeLevel		= CONFIG_GAME::MAX_PILOTEVADE_LEVEL;// ÇöÀç ÃÖ´ë ·¹º§Àº 21±îÁö´Ù. //(int)$PlayerObject->GetLevel();	
+		$MaxUpgradeLevel		= CONFIG_GAME::MAX_PILOTEVADE_LEVEL;// í˜„ì¬ ìµœëŒ€ ë ˆë²¨ì€ 21ê¹Œì§€ë‹¤. //(int)$PlayerObject->GetLevel();	
 	
 /*		if( $UpgradeItemStats == "PT" && (int)$CurrentPilotageLevel == $MaxUpgradeLevel )
 		{
-			// ÀÌ¹Ì ÃÖ°í ÃÖ´ë ½ºÅÈÀ» Âï¾ú´Ù.
+			// ì´ë¯¸ ìµœê³  ìµœëŒ€ ìŠ¤íƒ¯ì„ ì°ì—ˆë‹¤.
 			RaiseError('ERR_UPGRADE_ALREADY_MAX');
 			return false;
 		}
 */
 		if( $UpgradeItemStats == "EV" && (int)$CurrentEvadeLevel == $MaxUpgradeLevel )	
 		{
-			// ÀÌ¹Ì ÃÖ°í ÃÖ´ë ½ºÅÈÀ» Âï¾ú´Ù.
+			// ì´ë¯¸ ìµœê³  ìµœëŒ€ ìŠ¤íƒ¯ì„ ì°ì—ˆë‹¤.
 			RaiseError('ERR_UPGRADE_ALREADY_MAX');
 			return false;
 		}
 
-		if( $UpgradeItemStats == "EV" )	// È¸ÇÇ ±âµ¿ ¾÷±×·¹ÀÌµå¸é
+		if( $UpgradeItemStats == "EV" )	// íšŒí”¼ ê¸°ë™ ì—…ê·¸ë ˆì´ë“œë©´
 		{
 			$NextLevel	= $CurrentEvadeLevel + 1;
 			$EvadeInfoIndex = 9000300 + $NextLevel;
 			
 			$EvadeInfo	= $ItemManager->GetItem($EvadeInfoIndex);
-			$RealPrice	= $EvadeInfo['DgPctUpGold'];			// ÁøÂ¥ ¼Ò¸ğµÇ´Â Gold·®
+			$RealPrice	= $EvadeInfo['DgPctUpGold'];			// ì§„ì§œ ì†Œëª¨ë˜ëŠ” GoldëŸ‰
 
 			if( $NextLevel != $UpgradeItemStatsNextLevel )
 			{
@@ -69,7 +69,7 @@
 	
 
 	//====================================================================================================================================
-	// Step 4 : ¾÷±×·¹ÀÌµå °á°ú¿Í ÇÃ·¹ÀÌ¾î ÀÎº¥ ¸ñ·ÏÀ» Àü¼Û
+	// Step 4 : ì—…ê·¸ë ˆì´ë“œ ê²°ê³¼ì™€ í”Œë ˆì´ì–´ ì¸ë²¤ ëª©ë¡ì„ ì „ì†¡
 	//====================================================================================================================================
 	AddResult('Type', $UpgradeItemType );
 	AddResult('RemainGold', $PlayerObject->GetGold() );
@@ -77,9 +77,9 @@
 	AddResult('Inven', ConvertPlayerInvenInfo($PlayerObject) );
 	AddResult('Equip', ConvertPlayerEquipInfo($PlayerObject) );
 	//====================================================================================================================================
-	// ¼º°ø : ¿©±â±îÁö ¿ÔÀ¸¸é ¼º°ø ÇÑ °ÍÀÌ´Ù.
+	// ì„±ê³µ : ì—¬ê¸°ê¹Œì§€ ì™”ìœ¼ë©´ ì„±ê³µ í•œ ê²ƒì´ë‹¤.
 	//====================================================================================================================================
-	RaiseError('SUCCESS');	// ¿¡·¯°¡ ¾ø´Ù. Àß ¼öÇàµÇ¾ú´Ù. SUCCESS¸¦ ¼¼ÆÃÇÏ¸é µÈ´Ù.
+	RaiseError('SUCCESS');	// ì—ëŸ¬ê°€ ì—†ë‹¤. ì˜ ìˆ˜í–‰ë˜ì—ˆë‹¤. SUCCESSë¥¼ ì„¸íŒ…í•˜ë©´ ëœë‹¤.
 	return true;
 }
 
@@ -93,12 +93,12 @@ function OPERATE_TUTORIALCHECK()
 	if( CONFIG_DEBUG::ENABLE_VALIDATION_CHECK == 1 )
 	{
 		//====================================================================================================================================
-		// Step 1 : ÀÎÀÚÀÇ À¯È¿¼º Ã¼Å©
+		// Step 1 : ì¸ìì˜ ìœ íš¨ì„± ì²´í¬
 		//====================================================================================================================================
 		
 		if( IsValidRequestArguments() == false )
 		{
-			// TODO ERROR LOG : Arguments °¡ !! Æ²·È´Ù. 
+			// TODO ERROR LOG : Arguments ê°€ !! í‹€ë ¸ë‹¤. 
 			// TODO ADD_DB_LOG
 			RaiseError('ERR_VARIABLE');
 			return false;
@@ -106,28 +106,28 @@ function OPERATE_TUTORIALCHECK()
 	}	
 	
 	//====================================================================================================================================
-	// Step 2 : ÇÃ·¹ÀÌ¾î °´Ã¼ ¾ò¾î ÀÎÁõÇØº¸±â
+	// Step 2 : í”Œë ˆì´ì–´ ê°ì²´ ì–»ì–´ ì¸ì¦í•´ë³´ê¸°
 	//====================================================================================================================================
 	$PlayerObject = GetPlayerObject();
 	$nRet = GetAuthModule()->CheckAuth( GetUserId(), GetClientAccessToken(), GetClientProtocol() );
 	if ( $nRet != GetErrorCode('SUCCESS') )
 	{
-		// ¹º°¡ ¿À·ù°¡ ¹ß»ıÇß´Ù. 
-		// ¿À·ùÀÇ Á¾·ù´Â GetAuthModule()->CheckAuth ¿¡¼­ RaiseError ÇÏ°í ÀÖÀ¸´Ï º°µµÀÇ ¿¡·¯ ÄÚµå´Â ¹ñ¾î³»Áö ¾Ê´Â´Ù.
+		// ë­”ê°€ ì˜¤ë¥˜ê°€ ë°œìƒí–ˆë‹¤. 
+		// ì˜¤ë¥˜ì˜ ì¢…ë¥˜ëŠ” GetAuthModule()->CheckAuth ì—ì„œ RaiseError í•˜ê³  ìˆìœ¼ë‹ˆ ë³„ë„ì˜ ì—ëŸ¬ ì½”ë“œëŠ” ë±‰ì–´ë‚´ì§€ ì•ŠëŠ”ë‹¤.
 		return false;
 	}
 
 	TRACE("User ID : " .GetUserID());
 
 	//====================================================================================================================================
-	// Step 3 : Æ©Åä¸®¾ó ±âÃ¼, ÆÄÀÏ·µ Ã¼Å©
+	// Step 3 : íŠœí† ë¦¬ì–¼ ê¸°ì²´, íŒŒì¼ëŸ¿ ì²´í¬
 	//====================================================================================================================================
 	$FighterCheck = GetTutorialFighterCheck();
 	$PilotCheck = GetTutorialPilotCheck();
 	$IntroCheck = GetTutorialIntroCheck();
 	
 
-	TRACE("====== ±âÃ¼Ã¼Å© : $FighterCheck ==== ÆÄÀÏ·µ Ã¼Å© : $PilotCheck === ÀÎÆ®·Î Ã¼Å© : $IntroCheck ====");
+	TRACE("====== ê¸°ì²´ì²´í¬ : $FighterCheck ==== íŒŒì¼ëŸ¿ ì²´í¬ : $PilotCheck === ì¸íŠ¸ë¡œ ì²´í¬ : $IntroCheck ====");
 	
 	if($PlayerObject->TutorialCheck($FighterCheck, $PilotCheck, $IntroCheck) == false)
 	{
@@ -136,9 +136,9 @@ function OPERATE_TUTORIALCHECK()
 	}
 	
 	//====================================================================================================================================
-	// ¼º°ø : ¿©±â±îÁö ¿ÔÀ¸¸é ¼º°ø ÇÑ °ÍÀÌ´Ù.
+	// ì„±ê³µ : ì—¬ê¸°ê¹Œì§€ ì™”ìœ¼ë©´ ì„±ê³µ í•œ ê²ƒì´ë‹¤.
 	//====================================================================================================================================
-	RaiseError('SUCCESS');	// ¿¡·¯°¡ ¾ø´Ù. Àß ¼öÇàµÇ¾ú´Ù. SUCCESS¸¦ ¼¼ÆÃÇÏ¸é µÈ´Ù.
+	RaiseError('SUCCESS');	// ì—ëŸ¬ê°€ ì—†ë‹¤. ì˜ ìˆ˜í–‰ë˜ì—ˆë‹¤. SUCCESSë¥¼ ì„¸íŒ…í•˜ë©´ ëœë‹¤.
 	return true;
 }
 
@@ -148,12 +148,12 @@ function OPERATE_TUTORIALPROGRESS()
 	if( CONFIG_DEBUG::ENABLE_VALIDATION_CHECK == 1 )
 	{
 		//====================================================================================================================================
-		// Step 1 : ÀÎÀÚÀÇ À¯È¿¼º Ã¼Å©
+		// Step 1 : ì¸ìì˜ ìœ íš¨ì„± ì²´í¬
 		//====================================================================================================================================
 		
 		if( IsValidRequestArguments() == false )
 		{
-			// TODO ERROR LOG : Arguments °¡ !! Æ²·È´Ù. 
+			// TODO ERROR LOG : Arguments ê°€ !! í‹€ë ¸ë‹¤. 
 			// TODO ADD_DB_LOG
 			RaiseError('ERR_VARIABLE');
 			return false;
@@ -161,21 +161,21 @@ function OPERATE_TUTORIALPROGRESS()
 	}	
 	
 	//====================================================================================================================================
-	// Step 2 : ÇÃ·¹ÀÌ¾î °´Ã¼ ¾ò¾î ÀÎÁõÇØº¸±â
+	// Step 2 : í”Œë ˆì´ì–´ ê°ì²´ ì–»ì–´ ì¸ì¦í•´ë³´ê¸°
 	//====================================================================================================================================
 	$PlayerObject = GetPlayerObject();
 	$nRet = GetAuthModule()->CheckAuth( GetUserId(), GetClientAccessToken(), GetClientProtocol() );
 	if ( $nRet != GetErrorCode('SUCCESS') )
 	{
-		// ¹º°¡ ¿À·ù°¡ ¹ß»ıÇß´Ù. 
-		// ¿À·ùÀÇ Á¾·ù´Â GetAuthModule()->CheckAuth ¿¡¼­ RaiseError ÇÏ°í ÀÖÀ¸´Ï º°µµÀÇ ¿¡·¯ ÄÚµå´Â ¹ñ¾î³»Áö ¾Ê´Â´Ù.
+		// ë­”ê°€ ì˜¤ë¥˜ê°€ ë°œìƒí–ˆë‹¤. 
+		// ì˜¤ë¥˜ì˜ ì¢…ë¥˜ëŠ” GetAuthModule()->CheckAuth ì—ì„œ RaiseError í•˜ê³  ìˆìœ¼ë‹ˆ ë³„ë„ì˜ ì—ëŸ¬ ì½”ë“œëŠ” ë±‰ì–´ë‚´ì§€ ì•ŠëŠ”ë‹¤.
 		TRACE("=============== Tutorial Player Auth Error =================");
 		return false;
 	}
 
 	//TRACE("RegDate : $PlayerData['RegDateTime'];
 	//====================================================================================================================================
-	// Step 3 : Æ©Åä¸®¾ó ³Ñ¹ö¸µ ¹× 
+	// Step 3 : íŠœí† ë¦¬ì–¼ ë„˜ë²„ë§ ë° 
 	//====================================================================================================================================
 	$Category = (int) GetTutorialStepCategory();
 	$Index = (int) GetTutorialStepIndex();
@@ -197,15 +197,15 @@ function OPERATE_TUTORIALPROGRESS()
 	$TutorialFinishType = GetTutorialFinishType();	
 	$FinishType = GetFinishType();
 		
-	TRACE("===================Æ©Åä¸®¾ó Á¾·áÅ¸ÀÔ : $TutorialFinishType ====================");
+	TRACE("===================íŠœí† ë¦¬ì–¼ ì¢…ë£Œíƒ€ì… : $TutorialFinishType ====================");
 
 
 	if((SC($TutorialFinishType, 'NR') == true && $Index == 1 ) && 
-		($Category == CHAPTER1_CON || $Category == CHAPTER2_END))		//º¸»óÀÌ ¾øÀ½ ½ºÅ×ÀÌÁö ÁøÇàµµ¸¸ Áõ°¡
+		($Category == CHAPTER1_CON || $Category == CHAPTER2_END))		//ë³´ìƒì´ ì—†ìŒ ìŠ¤í…Œì´ì§€ ì§„í–‰ë„ë§Œ ì¦ê°€
 	{
 		$StageIdx			= 100001;
 		
-		TRACE("====================== ½ºÅ×ÀÌÁö : $StageIdx ======================");
+		TRACE("====================== ìŠ¤í…Œì´ì§€ : $StageIdx ======================");
 		
 		if($PlayerObject->TutorialStage($StageIdx) == false)
 		{
@@ -213,7 +213,7 @@ function OPERATE_TUTORIALPROGRESS()
 			return false;
 		}			
 	}
-	else if(SC($TutorialFinishType, 'LUP') == true)	// °­Á¦ ·¹º§¾÷
+	else if(SC($TutorialFinishType, 'LUP') == true)	// ê°•ì œ ë ˆë²¨ì—…
 	{
 		if($PlayerObject->TutorialForceLv($TutorialStepTime) == false)
 		{
@@ -224,9 +224,9 @@ function OPERATE_TUTORIALPROGRESS()
 		
 	
 	//====================================================================================================================================
-	// ¼º°ø : ¿©±â±îÁö ¿ÔÀ¸¸é ¼º°ø ÇÑ °ÍÀÌ´Ù.
+	// ì„±ê³µ : ì—¬ê¸°ê¹Œì§€ ì™”ìœ¼ë©´ ì„±ê³µ í•œ ê²ƒì´ë‹¤.
 	//====================================================================================================================================
-	RaiseError('SUCCESS');	// ¿¡·¯°¡ ¾ø´Ù. Àß ¼öÇàµÇ¾ú´Ù. SUCCESS¸¦ ¼¼ÆÃÇÏ¸é µÈ´Ù.
+	RaiseError('SUCCESS');	// ì—ëŸ¬ê°€ ì—†ë‹¤. ì˜ ìˆ˜í–‰ë˜ì—ˆë‹¤. SUCCESSë¥¼ ì„¸íŒ…í•˜ë©´ ëœë‹¤.
 	return true;
 }
 
@@ -242,14 +242,14 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
 			$IndexName = 'PCard_'.$TargetCardIndex;
 			$ExpIndexName = 'PCardExp_'.$TargetCardIndex;
 
-			// Ã³À½ È¹µæ ÀÎ°¡?
+			// ì²˜ìŒ íšë“ ì¸ê°€?
 			if( isset($PlayerObject->_PlayerData->_Inven[$IndexName]) == false )
 			{
 				$res_set['card'] = array('idx' => $TargetCardIndex, 'enchant' => 0, 'exp' => 0, 'lupxpb' => 0, 'lupxpe' => 0, 'luplvb' => 1, 'luplve' => 1, 'enclvb' => 0, 'enclve' => 0);
 				break;
 			}
 
-			// Ä«µå Á¤º¸ ¾ò±â
+			// ì¹´ë“œ ì •ë³´ ì–»ê¸°
 			$BeforeUpgradeNum = (int)$PlayerObject->_PlayerData->_Inven[$IndexName];
 			$BeforeExp = 0;
 			if( isset($PlayerObject->_PlayerData->_Inven[$ExpIndexName]) )
@@ -259,17 +259,17 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
 			$CardItemData = GetItemManager()->GetItem($TargetCardIndex);
 			if( is_null($CardItemData) || isset($CardItemData['PcardUpgradeNum']) == false || isset($CardItemData['PcardMaxLV']) == false || SC($CardItemData['Type'],'PCard') == false )
 			{
-				// ¿¡·¯
+				// ì—ëŸ¬
 				return false;
 			}
 
 			$MaxUpgradeNum = (int)$CardItemData['PcardUpgradeNum'];
 			$MaxLevel = (int)$CardItemData['PcardMaxLV'];
 
-			// °­È­°¡ ºÒ°¡´ÉÇÑ°¡?
+			// ê°•í™”ê°€ ë¶ˆê°€ëŠ¥í•œê°€?
 			if( $MaxUpgradeNum <= 0 )
 			{
-				// MaxLevel ÀÎ°¡
+				// MaxLevel ì¸ê°€
 				if( $BeforeLevel >= $MaxLevel )
 				{
 					$res_set['gold'] = $CardItemData['AlterGold'];
@@ -285,21 +285,21 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
 				break;
 			}
 
-			// ±âÁ¸¿¡ ÀÖ´Â Ä«µå¸¦ °­È­ ÇßÀ» ¶§ °­È­µî±Ş max º¸´Ù ÀÛÀº°¡
+			// ê¸°ì¡´ì— ìˆëŠ” ì¹´ë“œë¥¼ ê°•í™” í–ˆì„ ë•Œ ê°•í™”ë“±ê¸‰ max ë³´ë‹¤ ì‘ì€ê°€
 			if( $BeforeUpgradeNum + 1 < $MaxUpgradeNum )
 			{
 				$res_set['card'] = array('idx' => $TargetCardIndex, 'enchant' => $BeforeUpgradeNum + 1, 'exp' => $BeforeExp, 'lupxpb' => $BeforeExp, 'lupxpe' => $BeforeExp, 'luplvb' => $BeforeLevel, 'luplve' => $BeforeLevel, 'enclvb' => $BeforeUpgradeNum, 'enclve' => $BeforeUpgradeNum + 1);
 				break;
 			}
 
-			// »óÀ§ µî±ŞÀÇ Ä«µå°¡ ÀÖ´Â°¡?
+			// ìƒìœ„ ë“±ê¸‰ì˜ ì¹´ë“œê°€ ìˆëŠ”ê°€?
 			if( isset($CardItemData['PCardUpgrade']) == false )
 			{
-				// ¿¡·¯
+				// ì—ëŸ¬
 				return false;
 			}
 
-			// Å¸°ÙÀÌ ¹Ù²î¾úÀ½
+			// íƒ€ê²Ÿì´ ë°”ë€Œì—ˆìŒ
 			unset($res_set);
 			$res_set = array();
 
@@ -407,16 +407,16 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
 	public function FinishGame($VicType, $UseItemArray, $Score, $Exp, $Gold, $PlayTime, &$Ref_RewardCVCount)
     {
         $Medal = 0;
-        // ¾ÆÀÌÅÛ »ç¿ë¸ñ·Ï ºÎÅÍ Ã³¸®ÇÏÀÚ. ÀÌ°É db¿¡ ÇÑ¹ø¿¡ ¹Ğ¾î ³Ö´Â ¹æ¹ıÀ» °­±¸ÇØ¾ß ÇÑ´Ù.
-        // ÀÏ´Ü ±ŞÇÏ´Ï ÇÏ³ª¾¿ÀÌ¶óµµ Ã³¸®.
-        // 1 ´Ü°è: ¾ÆÀÌÅÛ ¼Ò¸ğ
+        // ì•„ì´í…œ ì‚¬ìš©ëª©ë¡ ë¶€í„° ì²˜ë¦¬í•˜ì. ì´ê±¸ dbì— í•œë²ˆì— ë°€ì–´ ë„£ëŠ” ë°©ë²•ì„ ê°•êµ¬í•´ì•¼ í•œë‹¤.
+        // ì¼ë‹¨ ê¸‰í•˜ë‹ˆ í•˜ë‚˜ì”©ì´ë¼ë„ ì²˜ë¦¬.
+        // 1 ë‹¨ê³„: ì•„ì´í…œ ì†Œëª¨
         if ($UseItemArray)
         {
             foreach ($UseItemArray as $ItemIdx => $Count)
             {
                 $ItemIdx = (int) $ItemIdx;
 
-                // ½ÇÁ¦ ¾ÆÀÌÅÛÀÎÁö º¸ÀÚ.
+                // ì‹¤ì œ ì•„ì´í…œì¸ì§€ ë³´ì.
                 $ItemOrgData = GetItemManager()->GetItem($ItemIdx);
                 if (isset($ItemOrgData) == false)
                 {
@@ -426,7 +426,7 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
                     //return false;
                 }
 
-                if ($ItemIdx != 5000000) // ±âº» ¹Ì»çÀÏÀÌ ¾Æ´Ï¶ó¸é
+                if ($ItemIdx != 5000000) // ê¸°ë³¸ ë¯¸ì‚¬ì¼ì´ ì•„ë‹ˆë¼ë©´
                 {
                     $SelectedItem = GetItemManager()->GetItem((int) $ItemIdx);
                     $MaxAmount    = isset($SelectedItem['MaxAmount']) ? $SelectedItem['MaxAmount'] : 1;
@@ -436,10 +436,10 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
         }
         TRACE("Finish : S($Score), E($Exp), G($Gold)");
         ////////////////////////////////////////////////////////////////////////////////////////////////
-        // ÀÌº¥Æ® Àû¿ë ¿©ºÎ ºÎÅÍ Ã³¸®ÇØº»´Ù.
+        // ì´ë²¤íŠ¸ ì ìš© ì—¬ë¶€ ë¶€í„° ì²˜ë¦¬í•´ë³¸ë‹¤.
         ////////////////////////////////////////////////////////////////////////////////////////////////
-        // ÇÇÅ©Å¸ÀÓ ÀÌº¥Æ®
-        $EventManager = GetEventManager(false); // ÇÇÅ©Å¸ÀÓ ÀÌº¥Æ®¸¸ ·ÎµåÇÑ´Ù.
+        // í”¼í¬íƒ€ì„ ì´ë²¤íŠ¸
+        $EventManager = GetEventManager(false); // í”¼í¬íƒ€ì„ ì´ë²¤íŠ¸ë§Œ ë¡œë“œí•œë‹¤.
         $EventFlag    = $EventManager->IsPeakTimeEventApply();
 
         $RewardType   = '';
@@ -450,25 +450,25 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
             $RewardType   = $EventManager->GetPeakTimeEventRewardType();
             $RewardAmount = (int) $EventManager->GetPeakTimeEventRewardAmount();
 
-            TRACE('ÇÇÅ©Å¸ÀÓ ÀÌº¥Æ® Àû¿ë µÊ:' . $RewardType . ", " . $RewardAmount);
+            TRACE('í”¼í¬íƒ€ì„ ì´ë²¤íŠ¸ ì ìš© ë¨:' . $RewardType . ", " . $RewardAmount);
         }
 
         if ($EventFlag != false && $RewardType == 'G')
         {
             $NewGold = (int) $Gold + (int) (((int) $Gold / 100) * ((int) $RewardAmount));
-            TRACE('ÇÇÅ©Å¸ÀÓ ÀÌº¥Æ® °ñµå Áõ°¡·® : ' . $Gold . ' -> ' . $NewGold);
+            TRACE('í”¼í¬íƒ€ì„ ì´ë²¤íŠ¸ ê³¨ë“œ ì¦ê°€ëŸ‰ : ' . $Gold . ' -> ' . $NewGold);
             $Gold    = (int) $NewGold;
         }
         else if ($EventFlag != false && $RewardType == 'S')
         {
             $NewScore = (int) $Score + (int) (((int) $Score / 100) * ((int) $RewardAmount));
-            TRACE('ÇÇÅ©Å¸ÀÓ ÀÌº¥Æ® ½ºÄÚ¾î Áõ°¡·® : ' . $Score . ' -> ' . $NewScore);
+            TRACE('í”¼í¬íƒ€ì„ ì´ë²¤íŠ¸ ìŠ¤ì½”ì–´ ì¦ê°€ëŸ‰ : ' . $Score . ' -> ' . $NewScore);
             $Score    = (int) $NewScore;
         }
         else if ($EventFlag != false && $RewardType == 'X')
         {
             $NewExp = (int) $Exp + (int) (((int) $Exp / 100) * (int) $RewardAmount);
-            TRACE('ÇÇÅ©Å¸ÀÓ ÀÌº¥Æ® °æÇèÄ¡ Áõ°¡·® : ' . $Exp . ' -> ' . $NewExp);
+            TRACE('í”¼í¬íƒ€ì„ ì´ë²¤íŠ¸ ê²½í—˜ì¹˜ ì¦ê°€ëŸ‰ : ' . $Exp . ' -> ' . $NewExp);
             $Exp    = (int) $NewExp;
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -476,58 +476,58 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
         TRACE("Event Finish : S($Score), E($Exp), G($Gold)");
 
 
-        // 2 ´Ü°è: À¯Àú Á¤º¸ °»½Å
+        // 2 ë‹¨ê³„: ìœ ì € ì •ë³´ ê°±ì‹ 
         $currentTime = GetNowTime();
         $key['_id']  = GetUserId();
         $data        = array();
 
         //$data['$inc']['Gold'] = (int)$Gold;
-        // 2-1 ´Ü°è: ÃÖ±Ù È¹µæ SCORE¸¦ ÀúÀå.
+        // 2-1 ë‹¨ê³„: ìµœê·¼ íšë“ SCOREë¥¼ ì €ì¥.
         $data['$set']['RecentScore']         = (int) $Score;
         $data['$set']['RecentScoreDateTime'] = (int) $currentTime;
 
-        // 2-2 ´Ü°è: Áö±İ È¹µæÇÑ EXP°¡ TOPº¸´Ù Å©¸é TOP °»½ÅÇØÁØ´Ù.
+        // 2-2 ë‹¨ê³„: ì§€ê¸ˆ íšë“í•œ EXPê°€ TOPë³´ë‹¤ í¬ë©´ TOP ê°±ì‹ í•´ì¤€ë‹¤.
         if ($this->_PlayerData->_TopScore < (int) $Score)
         {
             $data['$set']['TopScore']         = (int) $Score;
             $data['$set']['TopScoreDateTime'] = (int) $currentTime;
         }
 
-        // ÀÌ¹øÁÖ ±â·ÏÀÌ¸é ºñ±³ÇØ¼­ TopScore¸¦ ³Ö¾îÁÖ°í..¾Æ´Ï¸é ÀÌ¹øÁÖ ÃÖÃÊ ±â·ÏÀÌ¹Ç·Î TopÀ» ³Ö¾îÁØ´Ù.
+        // ì´ë²ˆì£¼ ê¸°ë¡ì´ë©´ ë¹„êµí•´ì„œ TopScoreë¥¼ ë„£ì–´ì£¼ê³ ..ì•„ë‹ˆë©´ ì´ë²ˆì£¼ ìµœì´ˆ ê¸°ë¡ì´ë¯€ë¡œ Topì„ ë„£ì–´ì¤€ë‹¤.
         $NextResetTime = GetNextResetTime();
         $ThisWeekStart = $NextResetTime - (3600 * 24 * 7);
 
-        // 2-3 ´Ü°è: ÁÖ°£ ´©Àû Score
-        if ($this->_PlayerData->_WeeklyAccumulateScoreDateTime > $ThisWeekStart) // ÀÌ¹øÁÖ ±â·Ï¿¡ ´©ÀûÇØ¾ß µÇ¸é
+        // 2-3 ë‹¨ê³„: ì£¼ê°„ ëˆ„ì  Score
+        if ($this->_PlayerData->_WeeklyAccumulateScoreDateTime > $ThisWeekStart) // ì´ë²ˆì£¼ ê¸°ë¡ì— ëˆ„ì í•´ì•¼ ë˜ë©´
         {
-            // ÁÖ°£ ÃÖ°í ±â·ÏÀÌ ¹Ù²î¸é
-            if ((int) $Score > $this->_PlayerData->_WeeklyTopScore)     // ÀÌ¹øÁÖ ÃÖ°í ±â·Ïº¸´Ù Å©¸é
+            // ì£¼ê°„ ìµœê³  ê¸°ë¡ì´ ë°”ë€Œë©´
+            if ((int) $Score > $this->_PlayerData->_WeeklyTopScore)     // ì´ë²ˆì£¼ ìµœê³  ê¸°ë¡ë³´ë‹¤ í¬ë©´
             {
                 $data['$set']['WeeklyTopScore']         = (int) $Score;
                 $data['$set']['WeeklyTopScoreDateTime'] = (int) $currentTime;
             }
-            // ±âÁ¸ ±â·Ï¿¡ ´©Àû½ÃÄÑÁØ´Ù.
+            // ê¸°ì¡´ ê¸°ë¡ì— ëˆ„ì ì‹œì¼œì¤€ë‹¤.
             $data['$inc']['WeeklyAccumulateScore']         = (int) $Score;
             $data['$set']['WeeklyAccumulateScoreDateTime'] = (int) $currentTime;
         }
         else
         {
-            // ÀÌ¹øÁÖ Àü ±â·ÏÀÌ¶ó¸é µ¤¾î ¾´´Ù.
+            // ì´ë²ˆì£¼ ì „ ê¸°ë¡ì´ë¼ë©´ ë®ì–´ ì“´ë‹¤.
             $data['$set']['WeeklyTopScore']                = (int) $Score;
             $data['$set']['WeeklyTopScoreDateTime']        = (int) $currentTime;
             $data['$set']['WeeklyAccumulateScore']         = (int) $Score;
             $data['$set']['WeeklyAccumulateScoreDateTime'] = (int) $currentTime;
         }
 
-        // 2-4 ´Ü°è: ÇÃ·¹ÀÌ ÀüÀûÀ» °ü¸®ÇÏÀÚ.
-        $data['$inc']['TotalPlayCount']        = 1;     // ÀüÃ¼ ÇÃ·¹ÀÌ Ä«¿îÆ® Áõ°¡ ½ÃÅ°°í
-        $data['$inc']['TotalPlayTime']         = (int) $PlayTime;    // ÀüÃ¼ ÇÃ·¹ÀÌ ½Ã°£ Áõ°¡ ½ÃÅ°°í (ms)
-        $data['$set']['TotalPlayTimeDateTime'] = (int) $currentTime; // ÀüÃ¼ ÇÃ·¹ÀÌ ½Ã°£ ±â·Ï ½Ã°£À» ±â·ÏÇÑ´Ù! ..; ÀÌ°Ç ÇÊ¿ä ¾ø´Âµ¥..±×³É..
+        // 2-4 ë‹¨ê³„: í”Œë ˆì´ ì „ì ì„ ê´€ë¦¬í•˜ì.
+        $data['$inc']['TotalPlayCount']        = 1;     // ì „ì²´ í”Œë ˆì´ ì¹´ìš´íŠ¸ ì¦ê°€ ì‹œí‚¤ê³ 
+        $data['$inc']['TotalPlayTime']         = (int) $PlayTime;    // ì „ì²´ í”Œë ˆì´ ì‹œê°„ ì¦ê°€ ì‹œí‚¤ê³  (ms)
+        $data['$set']['TotalPlayTimeDateTime'] = (int) $currentTime; // ì „ì²´ í”Œë ˆì´ ì‹œê°„ ê¸°ë¡ ì‹œê°„ì„ ê¸°ë¡í•œë‹¤! ..; ì´ê±´ í•„ìš” ì—†ëŠ”ë°..ê·¸ëƒ¥..
 
 	    TRACE("========================================================== Play count reference information ======================================================");
 	    TRACE("WeeklyPlayCountDateTime : " . date('Ymd H:i:s', $this->_PlayerData->_WeeklyPlayCountDateTime) . "(" . var_export($this->_PlayerData->_WeeklyPlayCountDateTime, true) . ") ThisWeekStart : " . date('Ymd H:i:s', $ThisWeekStart));
 
-        if ($this->_PlayerData->_WeeklyPlayCountDateTime > $ThisWeekStart)     // ÀÌ¹øÁÖ ´©Àû
+        if ($this->_PlayerData->_WeeklyPlayCountDateTime > $ThisWeekStart)     // ì´ë²ˆì£¼ ëˆ„ì 
         {
             $data['$inc']['WeeklyPlayCount']         = 1;
             $data['$set']['WeeklyPlayCountDateTime'] = (int) $currentTime;
@@ -536,20 +536,20 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
 
             if ($VicType == "VIC")
             {
-	            TRACE('ÀüÃ¼ / ÁÖ°£ ½Â¸® È½¼ö Áõ°¡');
-                $data['$inc']['TotalVictoryCount']          = 1;  // ÀüÃ¼ ½Â¸® È½¼ö Áõ°¡
-                $data['$inc']['WeeklyVictoryCount']         = 1; // ÁÖ°£ ½Â¸® È½¼ö Áõ°¡
+	            TRACE('ì „ì²´ / ì£¼ê°„ ìŠ¹ë¦¬ íšŸìˆ˜ ì¦ê°€');
+                $data['$inc']['TotalVictoryCount']          = 1;  // ì „ì²´ ìŠ¹ë¦¬ íšŸìˆ˜ ì¦ê°€
+                $data['$inc']['WeeklyVictoryCount']         = 1; // ì£¼ê°„ ìŠ¹ë¦¬ íšŸìˆ˜ ì¦ê°€
                 $data['$set']['WeeklyVictoryCountDateTime'] = (int) $currentTime;
             }
             else
             {
-	            TRACE('ÀüÃ¼ / ÁÖ°£ ÆĞ¹è È½¼ö Áõ°¡');
-                $data['$inc']['TotalDefeatCount']          = 1;  // ÀüÃ¼ ÆĞ¹è È½¼ö Áõ°¡
-                $data['$inc']['WeeklyDefeatCount']         = 1;  // ÁÖ°£ ÆĞ¹è È½¼ö Áõ°¡
+	            TRACE('ì „ì²´ / ì£¼ê°„ íŒ¨ë°° íšŸìˆ˜ ì¦ê°€');
+                $data['$inc']['TotalDefeatCount']          = 1;  // ì „ì²´ íŒ¨ë°° íšŸìˆ˜ ì¦ê°€
+                $data['$inc']['WeeklyDefeatCount']         = 1;  // ì£¼ê°„ íŒ¨ë°° íšŸìˆ˜ ì¦ê°€
                 $data['$set']['WeeklyDefeatCountDateTime'] = (int) $currentTime;
             }
         }
-        else                    // ÀÌ¹øÁÖ ÃÊ±âÈ­
+        else                    // ì´ë²ˆì£¼ ì´ˆê¸°í™”
         {
             $data['$set']['WeeklyPlayCount']         = 1;
             $data['$set']['WeeklyPlayCountDateTime'] = (int) $currentTime;
@@ -558,34 +558,34 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
 
             if ($VicType == "VIC")
             {
-                $data['$inc']['TotalVictoryCount']          = 1;  // ÀüÃ¼ ½Â¸® È½¼ö Áõ°¡
-                $data['$set']['WeeklyVictoryCount']         = 1; // ÁÖ°£ ½Â¸® È½¼ö Áõ°¡
-                $data['$set']['WeeklyDefeatCount']          = 0;  // ÁÖ°£ ÆĞ¹è È½¼ö Áõ°¡
+                $data['$inc']['TotalVictoryCount']          = 1;  // ì „ì²´ ìŠ¹ë¦¬ íšŸìˆ˜ ì¦ê°€
+                $data['$set']['WeeklyVictoryCount']         = 1; // ì£¼ê°„ ìŠ¹ë¦¬ íšŸìˆ˜ ì¦ê°€
+                $data['$set']['WeeklyDefeatCount']          = 0;  // ì£¼ê°„ íŒ¨ë°° íšŸìˆ˜ ì¦ê°€
                 $data['$set']['WeeklyVictoryCountDateTime'] = (int) $currentTime;
             }
             else
             {
-                $data['$inc']['TotalDefeatCount']          = 1;  // ÀüÃ¼ ÆĞ¹è È½¼ö Áõ°¡
-                $data['$set']['WeeklyVictoryCount']        = 0;  // ÁÖ°£ ÆĞ¹è È½¼ö Áõ°¡
-                $data['$set']['WeeklyDefeatCount']         = 1;  // ÁÖ°£ ÆĞ¹è È½¼ö Áõ°¡
+                $data['$inc']['TotalDefeatCount']          = 1;  // ì „ì²´ íŒ¨ë°° íšŸìˆ˜ ì¦ê°€
+                $data['$set']['WeeklyVictoryCount']        = 0;  // ì£¼ê°„ íŒ¨ë°° íšŸìˆ˜ ì¦ê°€
+                $data['$set']['WeeklyDefeatCount']         = 1;  // ì£¼ê°„ íŒ¨ë°° íšŸìˆ˜ ì¦ê°€
                 $data['$set']['WeeklyDefeatCountDateTime'] = (int) $currentTime;
             }
         }
 
-        // 3 ´Ü°è: ·¹º§¾÷
+        // 3 ë‹¨ê³„: ë ˆë²¨ì—…
         $IsLevelUP = false;
         $remainEXP = 0;
 
-        // ÃÖ°í ·¹º§ÀÌ ¾Æ´Ï¸é EXP¿¡ µû¸¥ ·¹º§¾÷ ÀÛ¾÷À» ÇÑ´Ù.
+        // ìµœê³  ë ˆë²¨ì´ ì•„ë‹ˆë©´ EXPì— ë”°ë¥¸ ë ˆë²¨ì—… ì‘ì—…ì„ í•œë‹¤.
         if ($this->_PlayerData->_Level < CONFIG_GAME::MAX_LEVEL)
         {
-            GetItemManager()->PreGroupGunMan(); // °Ç¸Ç Å×ÀÌºíÀ» ¸¸µå´Â ÀÛ¾÷À» ÇÑ´Ù. Æò»ó½Ã¿¡´Â ÇÏÁö ¾Ê°í ²À ÇÊ¿äÇÒ¶§¸¸ tableÀ» ºĞ¸®ÇÏ¿© ·¹º§º°·Î °¡Áö°í ÀÖ´Â´Ù.
+            GetItemManager()->PreGroupGunMan(); // ê±´ë§¨ í…Œì´ë¸”ì„ ë§Œë“œëŠ” ì‘ì—…ì„ í•œë‹¤. í‰ìƒì‹œì—ëŠ” í•˜ì§€ ì•Šê³  ê¼­ í•„ìš”í• ë•Œë§Œ tableì„ ë¶„ë¦¬í•˜ì—¬ ë ˆë²¨ë³„ë¡œ ê°€ì§€ê³  ìˆëŠ”ë‹¤.
 
             $FutureEXP = (int) $this->_PlayerData->_Exp + (int) $Exp;
 
             $CurrentGunMan = GetItemManager()->FindGunManData($this->_PlayerData->_Level);
             $FutureGunMan  = GetItemManager()->FindGunManData($this->_PlayerData->_Level + 1);
-            if (isset($FutureGunMan) == false || isset($CurrentGunMan) == false)  // µÑ Áß¿¡ ÇÏ³ª¶óµµ ¾øÀ½ ¾ÈµÇ°Ú´Ù.
+            if (isset($FutureGunMan) == false || isset($CurrentGunMan) == false)  // ë‘˜ ì¤‘ì— í•˜ë‚˜ë¼ë„ ì—†ìŒ ì•ˆë˜ê² ë‹¤.
             {
                 RaiseError('ERR_DB');
                 WRITE_FINISH_FAIL('GameFinish Fail UID: ' . GetUserId() . ', Error Code: RBFinishGame DB ERROR 1');
@@ -593,14 +593,14 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
             }
             $orgLevel   = (int) $this->_PlayerData->_Level;
             $RequireEXP = (int) ($CurrentGunMan['XpRequired']);
-            TRACE('ÇöÀç LEV: ' . (int) $this->_PlayerData->_Level);
-            TRACE('ÇöÀç EXP: ' . (int) $this->_PlayerData->_Exp);
-            TRACE('¾òÀº EXP: ' . (int) $Exp);
-            TRACE('¹Ì·¡ EXP: ' . $FutureEXP);
-            TRACE('·¹º§ ¾÷¿¡ ÇÊ¿äÇÑ EXP: ' . $RequireEXP);
+            TRACE('í˜„ì¬ LEV: ' . (int) $this->_PlayerData->_Level);
+            TRACE('í˜„ì¬ EXP: ' . (int) $this->_PlayerData->_Exp);
+            TRACE('ì–»ì€ EXP: ' . (int) $Exp);
+            TRACE('ë¯¸ë˜ EXP: ' . $FutureEXP);
+            TRACE('ë ˆë²¨ ì—…ì— í•„ìš”í•œ EXP: ' . $RequireEXP);
             if ($FutureEXP >= $RequireEXP)
             {
-                TRACE('·¹º§¾÷ Ã³¸®¸¦ ÇÏ°í ½Í´ÙÀÌ..');
+                TRACE('ë ˆë²¨ì—… ì²˜ë¦¬ë¥¼ í•˜ê³  ì‹¶ë‹¤ì´..');
 
                 $MReward = GetValInt($FutureGunMan, 'MReward', 0);
                 $GReward = GetValInt($FutureGunMan, 'GReward', 0);
@@ -616,7 +616,7 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
 
                     //////////////////////////////////////////////////////////
                     //
-                    // À§¸ŞÀÌµå °ÔÀÓ·Î±× - ÀçÈ­ - ·¹º§¾÷¿¡ ÀÇÇÑ ¸Ş´Ş º¸»ó
+                    // ìœ„ë©”ì´ë“œ ê²Œì„ë¡œê·¸ - ì¬í™” - ë ˆë²¨ì—…ì— ì˜í•œ ë©”ë‹¬ ë³´ìƒ
                     //
                     //////////////////////////////////////////////////////////
                     SetWemeLogIsGetProperty(true);
@@ -635,7 +635,7 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
 
                     //////////////////////////////////////////////////////////
                     //
-                    // À§¸ŞÀÌµå °ÔÀÓ·Î±× - ÀçÈ­ - ·¹º§¾÷¿¡ ÀÇÇÑ °ñµå º¸»ó
+                    // ìœ„ë©”ì´ë“œ ê²Œì„ë¡œê·¸ - ì¬í™” - ë ˆë²¨ì—…ì— ì˜í•œ ê³¨ë“œ ë³´ìƒ
                     //
                     //////////////////////////////////////////////////////////
                     SetWemeLogIsGetProperty(true);
@@ -650,21 +650,21 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
                     AddResult('lvupRewardAmount', 0);
                 }
 
-                $data['$inc']['Level'] = 1;      // ·¹º§À» 1¸¸Å­ ¿Ã·ÁÁÖ°í
+                $data['$inc']['Level'] = 1;      // ë ˆë²¨ì„ 1ë§Œí¼ ì˜¬ë ¤ì£¼ê³ 
                 $remainEXP             = $FutureEXP - $RequireEXP;
-                $data['$set']['Exp']   = (int) $remainEXP;  // ³²Àº °æÇèÄ¡¸¦ ÀúÀåÇØÁØ´Ù.
+                $data['$set']['Exp']   = (int) $remainEXP;  // ë‚¨ì€ ê²½í—˜ì¹˜ë¥¼ ì €ì¥í•´ì¤€ë‹¤.
 
-                TRACE('·¹º§¾÷ ÇÏ°í ³²Àº EXP: ' . $remainEXP);
+                TRACE('ë ˆë²¨ì—… í•˜ê³  ë‚¨ì€ EXP: ' . $remainEXP);
 
 
                 if ($this->_PlayerData->_Life < CONFIG_GAME::MAX_LIFE)
                 {
-                    $data['$set']['Life']            = CONFIG_GAME::MAX_LIFE; // ¿¬·áÅëµµ Ã¤¿öÁØ´Ù.
+                    $data['$set']['Life']            = CONFIG_GAME::MAX_LIFE; // ì—°ë£Œí†µë„ ì±„ì›Œì¤€ë‹¤.
                     $data['$set']['LifeUseDateTime'] = (int) $currentTime;
 
                     //////////////////////////////////////////////////////////
                     //
-                    // À§¸ŞÀÌµå °ÔÀÓ·Î±× - ÀçÈ­ - ·¹º§¾÷¿¡ ÀÇÇÑ ¿¬·á º¸»ó
+                    // ìœ„ë©”ì´ë“œ ê²Œì„ë¡œê·¸ - ì¬í™” - ë ˆë²¨ì—…ì— ì˜í•œ ì—°ë£Œ ë³´ìƒ
                     //
                     //////////////////////////////////////////////////////////
                     SetWemeLogIsGetProperty(true);
@@ -677,18 +677,18 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
                 $IsLevelUP = true;
                 $newLevel  = (int) $this->_PlayerData->_Level + 1;
 
-                // ¿ìÆíÇÔÀ¸·Î ÁÖ´Â ·¹º§¾÷ º¸»ó Ãß°¡
+                // ìš°í¸í•¨ìœ¼ë¡œ ì£¼ëŠ” ë ˆë²¨ì—… ë³´ìƒ ì¶”ê°€
                 if ($this->LevelupReward($newLevel) == true)
                 {
                     AddResult('lvuppostboxreward', 1);
                 }
 
-                // À§¸ŞÀÌµå °ÔÀÓ·Î±× - ·¹º§¾÷ ·Î±× ÇÃ·¡±× On
+                // ìœ„ë©”ì´ë“œ ê²Œì„ë¡œê·¸ - ë ˆë²¨ì—… ë¡œê·¸ í”Œë˜ê·¸ On
                 SetWemeLogPlayerIsLevelUp(true);
 
-                TRACE('·¹º§¾÷ÇÏ°í µÈ ·¹º§: ' . $newLevel);
+                TRACE('ë ˆë²¨ì—…í•˜ê³  ëœ ë ˆë²¨: ' . $newLevel);
 				
-				// Æ©Åä¸®¾ó ·¹º§ 5, 10 Ä«Å×°í¸®,ÀÎµ¦½º ¼³Á¤
+				// íŠœí† ë¦¬ì–¼ ë ˆë²¨ 5, 10 ì¹´í…Œê³ ë¦¬,ì¸ë±ìŠ¤ ì„¤ì •
 				if($newLevel == CONFIG_GAME::TUTORIAL_CHECKLVF)
 				{
 					$data['$set']['TutorialStepCategory'] = CONFIG_GAME::TUTORIAL_LVF_CATEGORY;
@@ -703,26 +703,26 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
             }
             else
             {
-                TRACE('·¹º§ ¾÷ ¾ÈÇÑ´ÙÀÌ');
+                TRACE('ë ˆë²¨ ì—… ì•ˆí•œë‹¤ì´');
                 $data['$inc']['Exp'] = (int) $Exp;
             }
         }
         $data['$inc']['Gold'] = (int) $Gold;
 
-        // 4´Ü°è: ¿¬½Â Ã³¸® (µğºñ)
+        // 4ë‹¨ê³„: ì—°ìŠ¹ ì²˜ë¦¬ (ë””ë¹„)
         $OriginalConsecutiveVictory                 = 0;
-        $data['$set']['PVP_LastConsecutiveVictory'] = (int) $this->_PlayerData->_PVP_ConsecutiveVictory;   // Á÷Àü ¿¬½Â¼ö¸¦ ÀúÀåÇÏ°í
+        $data['$set']['PVP_LastConsecutiveVictory'] = (int) $this->_PlayerData->_PVP_ConsecutiveVictory;   // ì§ì „ ì—°ìŠ¹ìˆ˜ë¥¼ ì €ì¥í•˜ê³ 
         if ($VicType == "VIC")
         {
             $OriginalConsecutiveVictory = (int) $this->_PlayerData->_PVP_ConsecutiveVictory + 1;
 
-            if ($OriginalConsecutiveVictory > $this->_PlayerData->_PVP_TopConsecutiveVictory) // ÃÖ°í ¿¬½ÂÀ» µ¹ÆÄÇß´Ù¹È
+            if ($OriginalConsecutiveVictory > $this->_PlayerData->_PVP_TopConsecutiveVictory) // ìµœê³  ì—°ìŠ¹ì„ ëŒíŒŒí–ˆë‹¤ë¯„
             {
                 $data['$set']['PVP_TopConsecutiveVictory']         = $OriginalConsecutiveVictory;
                 $data['$set']['PVP_TopConsecutiveVictoryDateTime'] = (int) $currentTime;
             }
 
-            // 100¿¬½ÂÀÌ ³ÑÀ¸¸é ¸®¼Â¿ä~
+            // 100ì—°ìŠ¹ì´ ë„˜ìœ¼ë©´ ë¦¬ì…‹ìš”~
             if ($OriginalConsecutiveVictory >= CONFIG_GAME::CONSECUTIVE_VICTORY_MAX) $data['$set']['PVP_ConsecutiveVictory'] = 0;
             else $data['$inc']['PVP_ConsecutiveVictory'] = 1;
         }
@@ -733,7 +733,7 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
 
         $data['$inc']['Medal'] = (int) $Medal;
 
-        // ¿¬½Â ´ëÀü Ã³¸® (°øÇåµµ °è»ê°ú µğºñ)
+        // ì—°ìŠ¹ ëŒ€ì „ ì²˜ë¦¬ (ê³µí—Œë„ ê³„ì‚°ê³¼ ë””ë¹„)
         $GainRBattleSeasonPoint = 0;
         $GainRBattleWarPoint    = 0;
         $LegionScore1           = 0;
@@ -776,7 +776,7 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
             $LegionScore2     = $LegionScoreArray[1];
         }
 
-        // ÃÖÁ¾ : DBÃ³¸®
+        // ìµœì¢… : DBì²˜ë¦¬
         if (MDB()->UpdateData(COLL::PLAYER, $key, $data) == false)
         {
             RaiseError('ERR_DB');
@@ -785,49 +785,49 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
         }
 
 
-        // È¹µæ EXP, GOLD ÀúÀå
+        // íšë“ EXP, GOLD ì €ì¥
         $this->_PlayerData->_Gold += (int) $Gold;
 
-        // 2-1 ´Ü°è: ÃÖ±Ù È¹µæ Score ÀúÀå
+        // 2-1 ë‹¨ê³„: ìµœê·¼ íšë“ Score ì €ì¥
         $this->_PlayerData->_RecentScore         = (int) $Score;
         $this->_PlayerData->_RecentScoreDateTime = (int) $currentTime;
 
 
-        // 2-2 ´Ü°è: Áö±İ È¹µæÇÑ Score°¡ TOPº¸´Ù Å©¸é TOP °»½ÅÇØÁØ´Ù.
+        // 2-2 ë‹¨ê³„: ì§€ê¸ˆ íšë“í•œ Scoreê°€ TOPë³´ë‹¤ í¬ë©´ TOP ê°±ì‹ í•´ì¤€ë‹¤.
         if ((int) $this->_PlayerData->_TopScore < (int) $Score)
         {
             $this->_PlayerData->_TopScore         = (int) $Score;
             $this->_PlayerData->_TopScoreDateTime = (int) $currentTime;
         }
 
-        // 2-3 ´Ü°è: ÁÖ°£ ´©Àû Score
-        if ((int) $this->_PlayerData->_WeeklyAccumulateScoreDateTime > $ThisWeekStart) // ÀÌ¹øÁÖ ±â·Ï¿¡ ´©ÀûÇØ¾ß µÇ¸é
+        // 2-3 ë‹¨ê³„: ì£¼ê°„ ëˆ„ì  Score
+        if ((int) $this->_PlayerData->_WeeklyAccumulateScoreDateTime > $ThisWeekStart) // ì´ë²ˆì£¼ ê¸°ë¡ì— ëˆ„ì í•´ì•¼ ë˜ë©´
         {
-            // ÁÖ°£ ÃÖ°í ±â·ÏÀÌ ¹Ù²î¸é
-            if ((int) $Score > (int) $this->_PlayerData->_WeeklyTopScore)     // ÀÌ¹øÁÖ ÃÖ°í ±â·Ïº¸´Ù Å©¸é
+            // ì£¼ê°„ ìµœê³  ê¸°ë¡ì´ ë°”ë€Œë©´
+            if ((int) $Score > (int) $this->_PlayerData->_WeeklyTopScore)     // ì´ë²ˆì£¼ ìµœê³  ê¸°ë¡ë³´ë‹¤ í¬ë©´
             {
                 $this->_PlayerData->_WeeklyTopScore         = (int) $Score;
                 $this->_PlayerData->_WeeklyTopScoreDateTime = (int) $currentTime;
             }
-            // ±âÁ¸ ±â·Ï¿¡ ´©Àû½ÃÄÑÁØ´Ù.
+            // ê¸°ì¡´ ê¸°ë¡ì— ëˆ„ì ì‹œì¼œì¤€ë‹¤.
             $this->_PlayerData->_WeeklyAccumulateScore += (int) $Score;
             $this->_PlayerData->_WeeklyAccumulateScoreDateTime = (int) $currentTime;
         }
         else
         {
-            // ÀÌ¹øÁÖ Àü ±â·ÏÀÌ¶ó¸é µ¤¾î ¾´´Ù.
+            // ì´ë²ˆì£¼ ì „ ê¸°ë¡ì´ë¼ë©´ ë®ì–´ ì“´ë‹¤.
             $this->_PlayerData->_WeeklyTopScore                = (int) $Score;
             $this->_PlayerData->_WeeklyTopScoreDateTime        = (int) $currentTime;
             $this->_PlayerData->_WeeklyAccumulateScore         = (int) $Score;
             $this->_PlayerData->_WeeklyAccumulateScoreDateTime = (int) $currentTime;
         }
 
-        // 2-4 ´Ü°è: ÇÃ·¹ÀÌ ÀüÀûÀ» °ü¸®ÇÏÀÚ.
-        $this->_PlayerData->_TotalPlayCount += 1;     // ÀüÃ¼ ÇÃ·¹ÀÌ Ä«¿îÆ® Áõ°¡ ½ÃÅ°°í
-        $this->_PlayerData->_TotalPlayTime += (int) $PlayTime;    // ÀüÃ¼ ÇÃ·¹ÀÌ ½Ã°£ Áõ°¡ ½ÃÅ°°í (ms)
-        $this->_PlayerData->_TotalPlayTimeDateTime = (int) $currentTime; // ÀüÃ¼ ÇÃ·¹ÀÌ ½Ã°£ ±â·Ï ½Ã°£À» ±â·ÏÇÑ´Ù! ..; ÀÌ°Ç ÇÊ¿ä ¾ø´Âµ¥..±×³É..
+        // 2-4 ë‹¨ê³„: í”Œë ˆì´ ì „ì ì„ ê´€ë¦¬í•˜ì.
+        $this->_PlayerData->_TotalPlayCount += 1;     // ì „ì²´ í”Œë ˆì´ ì¹´ìš´íŠ¸ ì¦ê°€ ì‹œí‚¤ê³ 
+        $this->_PlayerData->_TotalPlayTime += (int) $PlayTime;    // ì „ì²´ í”Œë ˆì´ ì‹œê°„ ì¦ê°€ ì‹œí‚¤ê³  (ms)
+        $this->_PlayerData->_TotalPlayTimeDateTime = (int) $currentTime; // ì „ì²´ í”Œë ˆì´ ì‹œê°„ ê¸°ë¡ ì‹œê°„ì„ ê¸°ë¡í•œë‹¤! ..; ì´ê±´ í•„ìš” ì—†ëŠ”ë°..ê·¸ëƒ¥..
 
-        if ((int) $this->_PlayerData->_WeeklyPlayCountDateTime > (int) $ThisWeekStart)     // ÀÌ¹øÁÖ ´©Àû
+        if ((int) $this->_PlayerData->_WeeklyPlayCountDateTime > (int) $ThisWeekStart)     // ì´ë²ˆì£¼ ëˆ„ì 
         {
             $this->_PlayerData->_WeeklyPlayCount += 1;
             $this->_PlayerData->_WeeklyPlayCountDateTime = (int) $currentTime;
@@ -836,18 +836,18 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
 
             if ($VicType == "VIC")
             {
-                $this->_PlayerData->_TotalVictoryCount += 1;  // ÀüÃ¼ ½Â¸® È½¼ö Áõ°¡
-                $this->_PlayerData->_WeeklyVictoryCount += 1;  // ÁÖ°£ ½Â¸® È½¼ö Áõ°¡
+                $this->_PlayerData->_TotalVictoryCount += 1;  // ì „ì²´ ìŠ¹ë¦¬ íšŸìˆ˜ ì¦ê°€
+                $this->_PlayerData->_WeeklyVictoryCount += 1;  // ì£¼ê°„ ìŠ¹ë¦¬ íšŸìˆ˜ ì¦ê°€
                 $this->_PlayerData->_WeeklyVictoryCountDateTime = (int) $currentTime;
             }
             else
             {
-                $this->_PlayerData->_TotalDefeatCount += 1;  // ÀüÃ¼ ÆĞ¹è È½¼ö Áõ°¡
-                $this->_PlayerData->_WeeklyDefeatCount += 1;  // ÁÖ°£ ÆĞ¹è È½¼ö Áõ°¡
+                $this->_PlayerData->_TotalDefeatCount += 1;  // ì „ì²´ íŒ¨ë°° íšŸìˆ˜ ì¦ê°€
+                $this->_PlayerData->_WeeklyDefeatCount += 1;  // ì£¼ê°„ íŒ¨ë°° íšŸìˆ˜ ì¦ê°€
                 $this->_PlayerData->_WeeklyDefeatCountDateTime = (int) $currentTime;
             }
         }
-        else                    // ÀÌ¹øÁÖ ÃÊ±âÈ­
+        else                    // ì´ë²ˆì£¼ ì´ˆê¸°í™”
         {
             $this->_PlayerData->_WeeklyPlayCount         = 1;
             $this->_PlayerData->_WeeklyPlayCountDateTime = (int) $currentTime;
@@ -856,16 +856,16 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
 
             if ($VicType == "VIC")
             {
-                $this->_PlayerData->_TotalVictoryCount += 1;  // ÀüÃ¼ ½Â¸® È½¼ö Áõ°¡
-                $this->_PlayerData->_WeeklyVictoryCount         = 1; // ÁÖ°£ ½Â¸® È½¼ö Áõ°¡
-                $this->_PlayerData->_WeeklyDefeatCount          = 0;  // ÁÖ°£ ÆĞ¹è È½¼ö Áõ°¡
+                $this->_PlayerData->_TotalVictoryCount += 1;  // ì „ì²´ ìŠ¹ë¦¬ íšŸìˆ˜ ì¦ê°€
+                $this->_PlayerData->_WeeklyVictoryCount         = 1; // ì£¼ê°„ ìŠ¹ë¦¬ íšŸìˆ˜ ì¦ê°€
+                $this->_PlayerData->_WeeklyDefeatCount          = 0;  // ì£¼ê°„ íŒ¨ë°° íšŸìˆ˜ ì¦ê°€
                 $this->_PlayerData->_WeeklyVictoryCountDateTime = (int) $currentTime;
             }
             else
             {
-                $this->_PlayerData->_TotalDefeatCount += 1;  // ÀüÃ¼ ÆĞ¹è È½¼ö Áõ°¡
-                $this->_PlayerData->_WeeklyVictoryCount        = 0; // ÁÖ°£ ½Â¸® È½¼ö Áõ°¡
-                $this->_PlayerData->_WeeklyDefeatCount         = 1;  // ÁÖ°£ ÆĞ¹è È½¼ö Áõ°¡
+                $this->_PlayerData->_TotalDefeatCount += 1;  // ì „ì²´ íŒ¨ë°° íšŸìˆ˜ ì¦ê°€
+                $this->_PlayerData->_WeeklyVictoryCount        = 0; // ì£¼ê°„ ìŠ¹ë¦¬ íšŸìˆ˜ ì¦ê°€
+                $this->_PlayerData->_WeeklyDefeatCount         = 1;  // ì£¼ê°„ íŒ¨ë°° íšŸìˆ˜ ì¦ê°€
                 $this->_PlayerData->_WeeklyDefeatCountDateTime = (int) $currentTime;
             }
         }
@@ -877,7 +877,7 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
 
             if ($this->_PlayerData->_Life < CONFIG_GAME::MAX_LIFE)
             {
-                $this->_PlayerData->_Life            = CONFIG_GAME::MAX_LIFE; // ¿¬·áÅëµµ Ã¤¿öÁØ´Ù.
+                $this->_PlayerData->_Life            = CONFIG_GAME::MAX_LIFE; // ì—°ë£Œí†µë„ ì±„ì›Œì¤€ë‹¤.
                 $this->_PlayerData->_LifeUseDateTime = (int) $currentTime;
             }
         }
@@ -886,17 +886,17 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
             $this->_PlayerData->_Exp += (int) $Exp;
         }
 
-        // 4´Ü°è: ¿¬½Â Ã³¸® (¼­¹ö ¸Ş¸ğ¸®)
-        $this->_PlayerData->_PVP_LastConsecutiveVictory = (int) $this->_PlayerData->_PVP_ConsecutiveVictory;  // Á÷Àü ¿¬½Â¼ö¸¦ ÀúÀåÇÏ°í
+        // 4ë‹¨ê³„: ì—°ìŠ¹ ì²˜ë¦¬ (ì„œë²„ ë©”ëª¨ë¦¬)
+        $this->_PlayerData->_PVP_LastConsecutiveVictory = (int) $this->_PlayerData->_PVP_ConsecutiveVictory;  // ì§ì „ ì—°ìŠ¹ìˆ˜ë¥¼ ì €ì¥í•˜ê³ 
         if ($VicType == "VIC")
         {
-            if ($OriginalConsecutiveVictory > $this->_PlayerData->_PVP_TopConsecutiveVictory) // ÃÖ°í ¿¬½ÂÀ» µ¹ÆÄÇß´Ù¹È
+            if ($OriginalConsecutiveVictory > $this->_PlayerData->_PVP_TopConsecutiveVictory) // ìµœê³  ì—°ìŠ¹ì„ ëŒíŒŒí–ˆë‹¤ë¯„
             {
                 $this->_PlayerData->_PVP_TopConsecutiveVictory         = $OriginalConsecutiveVictory;
                 $this->_PlayerData->_PVP_TopConsecutiveVictoryDateTime = (int) $currentTime;
             }
 
-            // ´Ş¼ºÇÑ ¿¬½ÂÀ¸·Î º¸»ó¹Ş±â À§ÇØ ¼¼ÆÃÇÔ.
+            // ë‹¬ì„±í•œ ì—°ìŠ¹ìœ¼ë¡œ ë³´ìƒë°›ê¸° ìœ„í•´ ì„¸íŒ…í•¨.
             $Ref_RewardCVCount = $OriginalConsecutiveVictory;
 
             if ($OriginalConsecutiveVictory >= CONFIG_GAME::CONSECUTIVE_VICTORY_MAX) $this->_PlayerData->_PVP_ConsecutiveVictory = 0;
@@ -917,7 +917,7 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
 
         $this->_PlayerData->_Medal += (int) $Medal;
 
-        // ¿¬½Â ´ëÀü Ã³¸® (¼­¹ö ¸Ş¸ğ¸®)
+        // ì—°ìŠ¹ ëŒ€ì „ ì²˜ë¦¬ (ì„œë²„ ë©”ëª¨ë¦¬)
         if ($GainRBattleSeasonPoint > 0)
         {
             $this->_PlayerData->_RBattleSeasonPoint += $GainRBattleSeasonPoint;
@@ -928,9 +928,9 @@ public function GivePilotCard(&$PlayerObject, $PCardIndex)
             AddResult('rbattle_legionscore2', $LegionScore2);
         }
 
-        // RDS¿¡ ±â·ÏÀ» ¾´´Ù.
+        // RDSì— ê¸°ë¡ì„ ì“´ë‹¤.
         GetScoreBoardObject()->UpdateScoreData(GetUserId(), $this->_PlayerData->_Level, $this->_PlayerData->_WeeklyAccumulateScore, $this->_PlayerData->_RecentScore,
-            $this->_PlayerData->_PVP_ConsecutiveVictory, // ÇöÀç ¿¬½Â
+            $this->_PlayerData->_PVP_ConsecutiveVictory, // í˜„ì¬ ì—°ìŠ¹
             $this->_PlayerData->_EquipAircraft, $this->_PlayerData->_EquipSkin, $this->_PlayerData->_EquipTurret, $this->_PlayerData->_EquipPilot, $this->_PlayerData->_MsgRecvSwitch,
             $this->_PlayerData->_GiftRecvSwitch, $this->_PlayerData->_PPISwitch, $this->_PlayerData->_Nickname, true);
 
