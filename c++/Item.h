@@ -6,17 +6,17 @@
 class InventoryComponent;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// World ¼­¹ö°¡ µé°í ÀÖ¾î¾ß ÇÒ ¾ÆÀÌÅÛ Á¤º¸ (DB·ÎºÎÅÍ ¾ò¾î³½ µ¿Àû µ¥ÀÌÅÍ°¡ ÁÖµÈ Á¤º¸)
-// ¾ÆÀÌÅÛ°ú Àåºñ¸¦ ºÐ¸®ÇÏ´Â °ÍÀÌ ÁÁÀ»Áö °ËÅä°¡ ÇÊ¿äÇÔ
+// World ì„œë²„ê°€ ë“¤ê³  ìžˆì–´ì•¼ í•  ì•„ì´í…œ ì •ë³´ (DBë¡œë¶€í„° ì–»ì–´ë‚¸ ë™ì  ë°ì´í„°ê°€ ì£¼ëœ ì •ë³´)
+// ì•„ì´í…œê³¼ ìž¥ë¹„ë¥¼ ë¶„ë¦¬í•˜ëŠ” ê²ƒì´ ì¢‹ì„ì§€ ê²€í† ê°€ í•„ìš”í•¨
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Item : public Disposable
 {
 private:
-	ItemData* mItemDataBase = nullptr;				// ¾ÆÀÌÅÛ Á¤º¸
-	InventoryComponent* mOwnerInventory = nullptr;  // ÀÌ ¾ÆÀÌÅÛÀÌ µé¾î°¡ ÀÖ´Â ÀÎº¥Åä¸®    
-	const ItemTemplate* mItemTemplate = nullptr;    // ¾ÆÀÌÅÛ ÅÛÇÃ¸´
-	StatPairContainer   mStatPairContainer;         // ¾ÆÀÌÅÛ¿¡ ºÎ¿©µÈ ½ºÅÈÀ» ÀüºÎ °¡Áø´Ù.
+	ItemData* mItemDataBase = nullptr;				// ì•„ì´í…œ ì •ë³´
+	InventoryComponent* mOwnerInventory = nullptr;  // ì´ ì•„ì´í…œì´ ë“¤ì–´ê°€ ìžˆëŠ” ì¸ë²¤í† ë¦¬    
+	const ItemTemplate* mItemTemplate = nullptr;    // ì•„ì´í…œ í…œí”Œë¦¿
+	StatPairContainer   mStatPairContainer;         // ì•„ì´í…œì— ë¶€ì—¬ëœ ìŠ¤íƒ¯ì„ ì „ë¶€ ê°€ì§„ë‹¤.
 
 
 public:
@@ -25,48 +25,48 @@ public:
 
 
 public:
-	// ItemData°¡ ¹Ýµå½Ã Á¤È®ÇÏ°Ô Ã¤¿öÁø Ã¤ È£ÃâµÇ¾î¾ß ÇÑ´Ù
-	// Æ¯È÷, ÀåºñÀÏ °æ¿ì ·£´ý ½ºÅÈÀº ºÐ¸íÇÏ°Ô!
+	// ItemDataê°€ ë°˜ë“œì‹œ ì •í™•í•˜ê²Œ ì±„ì›Œì§„ ì±„ í˜¸ì¶œë˜ì–´ì•¼ í•œë‹¤
+	// íŠ¹ížˆ, ìž¥ë¹„ì¼ ê²½ìš° ëžœë¤ ìŠ¤íƒ¯ì€ ë¶„ëª…í•˜ê²Œ!
 	bool LoadItem(const ItemDataGateway& itemData);
 
-	// ItemData°¡ ¹Ýµå½Ã Á¤È®ÇÏ°Ô Ã¤¿öÁø Ã¤ È£ÃâµÇ¾î¾ß ÇÑ´Ù
-	// Æ¯È÷, ÀåºñÀÏ °æ¿ì ·£´ý ½ºÅÈÀº ºÐ¸íÇÏ°Ô!
+	// ItemDataê°€ ë°˜ë“œì‹œ ì •í™•í•˜ê²Œ ì±„ì›Œì§„ ì±„ í˜¸ì¶œë˜ì–´ì•¼ í•œë‹¤
+	// íŠ¹ížˆ, ìž¥ë¹„ì¼ ê²½ìš° ëžœë¤ ìŠ¤íƒ¯ì€ ë¶„ëª…í•˜ê²Œ!
 	bool LoadItem(const ItemData& itemData);
 
 
-	// ½ºÅÈ °ü·Ã
+	// ìŠ¤íƒ¯ ê´€ë ¨
 public:
-	// ÃÖÀú Â÷¼öÀÇ ½ºÅÈ ¿À´õ¸¦ ¹ÝÈ¯. ½ºÅÈÀÌ ¾øÀ¸¸é ¾øÀ¸¸é STAT_ORDER_MAX¸¦ ¹ÝÈ¯.
+	// ìµœì € ì°¨ìˆ˜ì˜ ìŠ¤íƒ¯ ì˜¤ë”ë¥¼ ë°˜í™˜. ìŠ¤íƒ¯ì´ ì—†ìœ¼ë©´ ì—†ìœ¼ë©´ STAT_ORDER_MAXë¥¼ ë°˜í™˜.
 	StatOrder GetMinStatOrder() const;
 
 private:
 	void CalcStats();
 
 
-	// StackCount °ü·Ã
+	// StackCount ê´€ë ¨
 public:
-	// ½ºÅÃ Ä«¿îÆ®¸¦ ÀÔ·ÂÇÏ°í, ³²´Â ½ºÅÃ Ä«¿îÆ®°¡ À¯ÀÇ¹ÌÇÒ ¶§ ¹ÝÈ¯ (0º¸´Ù °°°Å³ª Å¬ ¶§¸¸ À¯ÀÇ¹Ì)
+	// ìŠ¤íƒ ì¹´ìš´íŠ¸ë¥¼ ìž…ë ¥í•˜ê³ , ë‚¨ëŠ” ìŠ¤íƒ ì¹´ìš´íŠ¸ê°€ ìœ ì˜ë¯¸í•  ë•Œ ë°˜í™˜ (0ë³´ë‹¤ ê°™ê±°ë‚˜ í´ ë•Œë§Œ ìœ ì˜ë¯¸)
 	ItemCount SetCount(ItemCount count);
 
-	// ½ºÅÃ Ä«¿îÆ®¸¦ º¯°æÇÏ°í, ³²´Â ½ºÅÃ Ä«¿îÆ®°¡ À¯ÀÇ¹ÌÇÒ ¶§ ¹ÝÈ¯ (0º¸´Ù °°°Å³ª Å¬ ¶§¸¸ À¯ÀÇ¹Ì)
+	// ìŠ¤íƒ ì¹´ìš´íŠ¸ë¥¼ ë³€ê²½í•˜ê³ , ë‚¨ëŠ” ìŠ¤íƒ ì¹´ìš´íŠ¸ê°€ ìœ ì˜ë¯¸í•  ë•Œ ë°˜í™˜ (0ë³´ë‹¤ ê°™ê±°ë‚˜ í´ ë•Œë§Œ ìœ ì˜ë¯¸)
 	ItemCount ChangeCount(int16 delta);
 
-	// ³²Àº ½ºÅÃ °³¼ö
+	// ë‚¨ì€ ìŠ¤íƒ ê°œìˆ˜
 	ItemCount GetRemainStackCount() const;
 
 
-	// Âø¿ë ¾ÆÀÌÅÛ °ü·Ã
+	// ì°©ìš© ì•„ì´í…œ ê´€ë ¨
 public:
-	// Àá±Ý/Àá±ÝÇØÁ¦ »óÅÂ º¯°æ
+	// ìž ê¸ˆ/ìž ê¸ˆí•´ì œ ìƒíƒœ ë³€ê²½
 	bool UpdateLock(bool locked);
 
-	// ·¹º§, µî±Þ, °æÇèÄ¡ º¯°æ
+	// ë ˆë²¨, ë“±ê¸‰, ê²½í—˜ì¹˜ ë³€ê²½
 	bool UpdateLevel(Level level, ItemGrade grade, Exp exp);
 
-	// Âø¿ë º¯°æ
+	// ì°©ìš© ë³€ê²½
 	bool UpdatePreset(PresetValue presetValue);
 
-	// ¼ÒÄÏÆÃ º¯°æ
+	// ì†Œì¼“íŒ… ë³€ê²½
 	bool UpdateSocket(ItemDBId parentItemDBId, SocketId socketId);
 
 	
@@ -105,11 +105,11 @@ public:
 	StatPairContainer& GetStatPairContainer() noexcept { return mStatPairContainer; }
 	const StatPairContainer& GetStatPairContainer() const noexcept { return mStatPairContainer; }
 
-	// ÀÌÇÏ from ItemTemplate
+	// ì´í•˜ from ItemTemplate
 	const ItemTemplate* GetItemTemplate() const noexcept { return mItemTemplate; }
-	// ÃÖ´ë ½ºÅÃ °³¼ö
+	// ìµœëŒ€ ìŠ¤íƒ ê°œìˆ˜
 	ItemCount GetMaxStackCount() const { return mItemTemplate->GetMaxStackCount(); }
-	// ½ºÅÃ °¡´ÉÇÑ ¾ÆÀÌÅÛÀÎ°¡? (1º¸´Ù Ä¿¾ß ½ºÅÃ °¡´ÉÇÑ °Í)
+	// ìŠ¤íƒ ê°€ëŠ¥í•œ ì•„ì´í…œì¸ê°€? (1ë³´ë‹¤ ì»¤ì•¼ ìŠ¤íƒ ê°€ëŠ¥í•œ ê²ƒ)
 	bool IsStackable() const { return mItemTemplate->IsStackable(); }
 
 	ItemType GetType() const { return mItemTemplate->GetType(); }
