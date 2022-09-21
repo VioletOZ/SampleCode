@@ -2,7 +2,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MailBox BaseClass
-// Gateway¿¡¼­ °ü¸®ÇÏ´Â °èÁ¤¿ìÆíÇÔ(AccountMailBox)°ú Ä³¸¯ÅÍ¿ìÆíÇÔ(UserMailBox)ÀÇ ºÎ¸ğ Å¬·¡½º
+// Gatewayì—ì„œ ê´€ë¦¬í•˜ëŠ” ê³„ì •ìš°í¸í•¨(AccountMailBox)ê³¼ ìºë¦­í„°ìš°í¸í•¨(UserMailBox)ì˜ ë¶€ëª¨ í´ë˜ìŠ¤
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Inventory;
@@ -14,8 +14,8 @@ public:
 	
 
 private:
-	MailDBIdSet			mMailDBIdSet;		// ¿ìÆí Áßº¹ ¿©ºÎ Ã¼Å©¿ëµµ
-	MailDataList		mMailDataList;		// ¿ìÆíÇÔ¿¡ Ä³½ÃÇØµĞ ¸ŞÀÏ Á¤º¸
+	MailDBIdSet			mMailDBIdSet;		// ìš°í¸ ì¤‘ë³µ ì—¬ë¶€ ì²´í¬ìš©ë„
+	MailDataList		mMailDataList;		// ìš°í¸í•¨ì— ìºì‹œí•´ë‘” ë©”ì¼ ì •ë³´
 	std::atomic<bool>	mCached = false;
 
 
@@ -24,7 +24,7 @@ public:
 
 
 public:
-	// ¿ìÆíÀ» Ä³½ÃÇÑ´Ù
+	// ìš°í¸ì„ ìºì‹œí•œë‹¤
 	void CacheMailList(const MailDataList& mailDataList);
 	bool IsCached() const noexcept { return mCached.load(); }
 
