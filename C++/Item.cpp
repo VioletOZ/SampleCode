@@ -21,20 +21,20 @@ Item::~Item()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ItemDataGateway¸¦ ÀÌ¿ëÇØ ·Îµå
+// ItemDataGatewayë¥¼ ì´ìš©í•´ ë¡œë“œ
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool Item::LoadItem(const ItemDataGateway& itemDataGateway)
 {
 	TRACE;
 
-	// template id°¡ ¿Ã¹Ù¸¥Áö, ÅÛÇÃ¸´ ÆÄÀÏÀÌ ÀÖ´ÂÁö Ã¼Å©
+	// template idê°€ ì˜¬ë°”ë¥¸ì§€, í…œí”Œë¦¿ íŒŒì¼ì´ ìˆëŠ”ì§€ ì²´í¬
 	const ItemTemplate* itemTemplate = GData<ItemDataSheet>()->Find(itemDataGateway.mTemplateId);
 	if (nullptr == itemTemplate)
 		return false;
 
-	// ÅÛÇÃ¸´ Á¤º¸ ÀúÀå
+	// í…œí”Œë¦¿ ì •ë³´ ì €ì¥
 	mItemTemplate = itemTemplate;
-	// ¾ÆÀÌÅÛ µ¥ÀÌÅÍ ÀúÀå
+	// ì•„ì´í…œ ë°ì´í„° ì €ì¥
 	if (ItemType::EQUIP == itemTemplate->GetType())
 	{
 		mItemDataBase = xnew<ItemDataEquip>();
@@ -46,7 +46,7 @@ bool Item::LoadItem(const ItemDataGateway& itemDataGateway)
 		memcpy_s(mItemDataBase, sizeof(ItemData), &itemDataGateway, sizeof(ItemData));
 	}
 
-	// ½ºÅÈ °è»ê
+	// ìŠ¤íƒ¯ ê³„ì‚°
 	CalcStats();
 
 	return true;
@@ -55,20 +55,20 @@ bool Item::LoadItem(const ItemDataGateway& itemDataGateway)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ItemData¸¦ ÀÌ¿ëÇØ ·Îµå
+// ItemDataë¥¼ ì´ìš©í•´ ë¡œë“œ
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool Item::LoadItem(const ItemData& itemData)
 {
     TRACE;
 
-    // template id°¡ ¿Ã¹Ù¸¥Áö, ÅÛÇÃ¸´ ÆÄÀÏÀÌ ÀÖ´ÂÁö Ã¼Å©
+    // template idê°€ ì˜¬ë°”ë¥¸ì§€, í…œí”Œë¦¿ íŒŒì¼ì´ ìˆëŠ”ì§€ ì²´í¬
     const ItemTemplate* itemTemplate = GData<ItemDataSheet>()->Find(itemData.mTemplateId);
     if (nullptr == itemTemplate)
         return false;
 
-    // ÅÛÇÃ¸´ Á¤º¸ ÀúÀå
+    // í…œí”Œë¦¿ ì •ë³´ ì €ì¥
     mItemTemplate = itemTemplate;
-    // ¾ÆÀÌÅÛ µ¥ÀÌÅÍ ÀúÀå
+    // ì•„ì´í…œ ë°ì´í„° ì €ì¥
 	if (ItemType::EQUIP == itemTemplate->GetType())
 	{
 		mItemDataBase = xnew<ItemDataEquip>();
@@ -79,7 +79,7 @@ bool Item::LoadItem(const ItemData& itemData)
 		mItemDataBase = xnew<ItemData>(itemData);
 	}
     
-	// ½ºÅÈ °è»ê
+	// ìŠ¤íƒ¯ ê³„ì‚°
 	CalcStats();
 
 	return true;
@@ -88,9 +88,9 @@ bool Item::LoadItem(const ItemData& itemData)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ¾ÆÀÌÅÛ ½ºÅÈ Áß Á¦ÀÏ ³·Àº Â÷¼ö¸¦ Ã£¾Æ¼­ ¹İÈ¯ÇÑ´Ù
-// Âü°í)
-//  ÀÌÈÄ ¾ÆÀÌÅÛ¿¡ º¸¼® µîÀ» Å»ÂøÇÏ°Å³ª, Passivity°¡ ºÎ¿©µÇ¸é ±×°Íµéµµ Á¶»ç¸¦ ÇØ¾ß ÇÑ´Ù
+// ì•„ì´í…œ ìŠ¤íƒ¯ ì¤‘ ì œì¼ ë‚®ì€ ì°¨ìˆ˜ë¥¼ ì°¾ì•„ì„œ ë°˜í™˜í•œë‹¤
+// ì°¸ê³ )
+//  ì´í›„ ì•„ì´í…œì— ë³´ì„ ë“±ì„ íƒˆì°©í•˜ê±°ë‚˜, Passivityê°€ ë¶€ì—¬ë˜ë©´ ê·¸ê²ƒë“¤ë„ ì¡°ì‚¬ë¥¼ í•´ì•¼ í•œë‹¤
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 StatOrder Item::GetMinStatOrder() const
 {
@@ -101,11 +101,11 @@ StatOrder Item::GetMinStatOrder() const
     minStatOrder = mStatPairContainer.GetMinStatOrder();
     if (minStatOrder <= STAT_ORDER_1)
     {
-        // Á¦ÀÏ ³·Àº Â÷¼ö¸¦ Ã£¾ÒÀ¸¸é ´õÀÌ»ó Ã£À» ÇÊ¿ä°¡ ¾ø´Ù.
+        // ì œì¼ ë‚®ì€ ì°¨ìˆ˜ë¥¼ ì°¾ì•˜ìœ¼ë©´ ë”ì´ìƒ ì°¾ì„ í•„ìš”ê°€ ì—†ë‹¤.
         return minStatOrder;
     }
 
-    // TODO : ÀÌÈÄ ¾ÆÀÌÅÛ¿¡ º¸¼® µîÀ» Å»ÂøÇÏ°Å³ª, Passivity°¡ ºÎ¿©µÇ¸é ±×°Íµéµµ Á¶»ç¸¦ ÇØ¾ß ÇÑ´Ù
+    // TODO : ì´í›„ ì•„ì´í…œì— ë³´ì„ ë“±ì„ íƒˆì°©í•˜ê±°ë‚˜, Passivityê°€ ë¶€ì—¬ë˜ë©´ ê·¸ê²ƒë“¤ë„ ì¡°ì‚¬ë¥¼ í•´ì•¼ í•œë‹¤
 
     return minStatOrder;
 
@@ -114,21 +114,21 @@ StatOrder Item::GetMinStatOrder() const
 
 void Item::CalcStats()
 {
-	// ¾ÆÀÌÅÛ µ¥ÀÌÅÍ ÀúÀåÀÌ ¸ÕÀú ÀÌ·ïÁ®¾ß ¾Æ·¡ ½ºÅÈ °è»êÀÌ µ¿ÀÛÇÔ.
-// Àåºñ ¾ÆÀÌÅÛÀÏ °æ¿ì¿¡¸¸ ¾ÆÀÌÅÛ µî±Ş ¹İ¿µÇÏ¿© ½ºÅÈ°è»ê
+	// ì•„ì´í…œ ë°ì´í„° ì €ì¥ì´ ë¨¼ì € ì´ë¤„ì ¸ì•¼ ì•„ë˜ ìŠ¤íƒ¯ ê³„ì‚°ì´ ë™ì‘í•¨.
+// ì¥ë¹„ ì•„ì´í…œì¼ ê²½ìš°ì—ë§Œ ì•„ì´í…œ ë“±ê¸‰ ë°˜ì˜í•˜ì—¬ ìŠ¤íƒ¯ê³„ì‚°
 	if (ItemType::EQUIP != mItemTemplate->GetType()) return;
 
 	StatPairList statPairList;
 
 	const ItemEquipDetail* equipDetail = mItemTemplate->GetEquipDetail();
-	_ASSERT_CRASH(equipDetail);  // Àåºñ¸¸!
+	_ASSERT_CRASH(equipDetail);  // ì¥ë¹„ë§Œ!
 
-	// ½ºÅÈºÎÅÍ
+	// ìŠ¤íƒ¯ë¶€í„°
 	const StatPairList& itemStatList = equipDetail->GetStatList();
 	for (const StatPair& statPair : itemStatList)
 		statPairList.push_back(statPair);
 
-	// ÃßÈÄ °¢Á¾ º¸¼®ÀÌ³ª, Æ¯¼ö°­È­ µîÀ¸·Î ÀÎÇÑ Ãß°¡ ½ºÅÈÀ» ¿©±â¿¡¼­ ´õÇØÁÖ¸é µÈ´Ù
+	// ì¶”í›„ ê°ì¢… ë³´ì„ì´ë‚˜, íŠ¹ìˆ˜ê°•í™” ë“±ìœ¼ë¡œ ì¸í•œ ì¶”ê°€ ìŠ¤íƒ¯ì„ ì—¬ê¸°ì—ì„œ ë”í•´ì£¼ë©´ ëœë‹¤
 
 	mStatPairContainer.Setup(std::move(statPairList));
 }
@@ -140,7 +140,7 @@ ItemCount Item::SetCount(ItemCount count)
 
 	_ASSERT_CRASH(nullptr != mItemDataBase);
 
-	// ½ºÅÃ °¡´ÉÇÑ ¾ÆÀÌÅÛÀÌ¾î¾ß ÇÑ´Ù
+	// ìŠ¤íƒ ê°€ëŠ¥í•œ ì•„ì´í…œì´ì–´ì•¼ í•œë‹¤
 	_ASSERT_DEBUG(IsStackable());
 
 	ItemCount newStackCount = count;
@@ -150,13 +150,13 @@ ItemCount Item::SetCount(ItemCount count)
 	if (newStackCount > maxStackCount)
 		remainStackCount = newStackCount - maxStackCount;
 
-	// Over/Under-Flow ¹æÁö
+	// Over/Under-Flow ë°©ì§€
 	newStackCount = std::clamp(newStackCount, (ItemCount)0, maxStackCount);
 
 	mItemDataBase->mStackCount = newStackCount;
 
-	// 0°³ ½ºÅÃ Ä«¿îÆ®¸¦ ¼³Á¤ÇÒ ¼ø ¾ø´Ù
-	// ÀÌ ÇÔ¼ö¸¦ È£ÃâÇÏ±â ÀÌÀü¿¡ Á¶°Ç Ã¼Å©¸¦ ÇÏ¿© »èÁ¦¸¦ ÇÏ´Â °Ô ¸Â´Ù
+	// 0ê°œ ìŠ¤íƒ ì¹´ìš´íŠ¸ë¥¼ ì„¤ì •í•  ìˆœ ì—†ë‹¤
+	// ì´ í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•˜ê¸° ì´ì „ì— ì¡°ê±´ ì²´í¬ë¥¼ í•˜ì—¬ ì‚­ì œë¥¼ í•˜ëŠ” ê²Œ ë§ë‹¤
 	_ASSERT_DEBUG(mItemDataBase->mStackCount > 0);
 
 	return remainStackCount;
@@ -180,8 +180,8 @@ ItemCount Item::GetRemainStackCount() const
 {
     TRACE;
 
-    // ¼­ºñ½º Áß ÁßÃ¸ ÃÖ´ë °³¼ö°¡ ÀÛ¾ÆÁö¸é À½¼ö·Î ³ª¿Ã ¼ö ÀÖÀ¸´Ï,
-    // À½¼ö°¡ ³ª¿ÀÁö ¾Êµµ·Ï clamping ÇØÁà¾ß ÇÑ´Ù
+    // ì„œë¹„ìŠ¤ ì¤‘ ì¤‘ì²© ìµœëŒ€ ê°œìˆ˜ê°€ ì‘ì•„ì§€ë©´ ìŒìˆ˜ë¡œ ë‚˜ì˜¬ ìˆ˜ ìˆìœ¼ë‹ˆ,
+    // ìŒìˆ˜ê°€ ë‚˜ì˜¤ì§€ ì•Šë„ë¡ clamping í•´ì¤˜ì•¼ í•œë‹¤
     const ItemCount remainStackCount = mItemTemplate->GetMaxStackCount() - mItemDataBase->mStackCount;
     return std::max(MIN_ITEM_COUNT, remainStackCount);
 
@@ -220,7 +220,7 @@ bool Item::UpdateLevel(Level level, ItemGrade grade, Exp exp)
 	itemDataEquip->mGrade = grade;
 	itemDataEquip->mExp = exp;
 
-	// ½ºÅÈ °è»ê
+	// ìŠ¤íƒ¯ ê³„ì‚°
 	CalcStats();
 
 	return true;
@@ -258,7 +258,7 @@ bool Item::UpdateSocket(ItemDBId parentItemDBId, SocketId socketId)
 	itemDataEquip->mParentItemDBId = parentItemDBId;
 	itemDataEquip->mSocketId = socketId;
 
-	// ½ºÅÈ °è»ê
+	// ìŠ¤íƒ¯ ê³„ì‚°
 	CalcStats();
 
 	return true;
