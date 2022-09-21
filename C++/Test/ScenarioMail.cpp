@@ -22,7 +22,7 @@ void ScenarioMail::Init()
 	TRACE;
 
 	mTaskHelper.RegTaskHandler(TaskIdx::CS_CHEAT_MAIL_LIST, &ScenarioMail::TaskHandler_CS_CHEAT_MAIL_LIST);
-	/* ÀÌºÎºÐÀº °ú°Å ¿ìÆí ¹Þ±â Å×½ºÆ®¿ë ÁÖ¼®À» Ç®¸é Å×½ºÆ® °¡´É
+	/* ì´ë¶€ë¶„ì€ ê³¼ê±° ìš°íŽ¸ ë°›ê¸° í…ŒìŠ¤íŠ¸ìš© ì£¼ì„ì„ í’€ë©´ í…ŒìŠ¤íŠ¸ ê°€ëŠ¥
 	mTaskHelper.RegTaskHandler(TaskIdx::CS_REQ_MAIL_LIST_ACCOUNT, &ScenarioMail::TaskHandler_CS_REQ_MAIL_LIST_ACCOUNT);
 	mTaskHelper.RegTaskHandler(TaskIdx::CS_REQ_MAIL_LIST_USER, &ScenarioMail::TaskHandler_CS_REQ_MAIL_LIST_USER);
 	*/
@@ -74,7 +74,7 @@ void ScenarioMail::TaskHandler_CS_CHEAT_MAIL_LIST(
 
 	GatewaySession* gatewaySession = GetGatewaySession();	
 
-	// ¿ìÆí¸ñ·Ï °»½Å 0 = ACCOUNT, 1 = USER
+	// ìš°íŽ¸ëª©ë¡ ê°±ì‹  0 = ACCOUNT, 1 = USER
 	gatewaySession->Send_CG_ADMIN_COMMAND_QA(authSessionContext->mAccountId, L"refreshMail 1"); 
 	
 	TRACE_END;
@@ -159,7 +159,7 @@ void ScenarioMail::TaskHandler_CS_REQ_MAIL_SEND(
 		gatewaySessionContext->mGatewaySessionState == GatewaySessionContext::GATEWAY_SESSION_STATE::LOGINED
 	);
 
-	// Å×½ºÆ®¿ëÀ¸·Î ÀÏ´Ü °èÁ¤¸ÞÀÏÇÔÀ¸·Î º¸³»º¸ÀÚ. ³ª¿¡°Ô º¸³»´Â Å×½ºÆ®.
+	// í…ŒìŠ¤íŠ¸ìš©ìœ¼ë¡œ ì¼ë‹¨ ê³„ì •ë©”ì¼í•¨ìœ¼ë¡œ ë³´ë‚´ë³´ìž. ë‚˜ì—ê²Œ ë³´ë‚´ëŠ” í…ŒìŠ¤íŠ¸.
 	{
 		GatewaySession* gatewaySession = GetGatewaySession();
 		gatewaySession->Send_CG_REQ_MAIL_SEND(authSessionContext->mAccountId, MailBoxType::ACCOUNT);
@@ -187,8 +187,8 @@ void ScenarioMail::TaskHandler_CS_REQ_MAIL_READ(
 		gatewaySessionContext->mGatewaySessionState == GatewaySessionContext::GATEWAY_SESSION_STATE::LOGINED
 	);
 		
-	// ½ÇÁ¦·Î´Â Å¬¶ó°¡ ¹ÞÀ¸·Á´Â MailDBId¸¦ ¸ð¾Æ¼­ ¹Þ±â ¿äÃ»ÇÏµµ·Ï ÇÒ ¿¹Á¤ÀÔ´Ï´Ù
-	// ÇÏÁö¸¸ ½ºÆ®·¹½ºº¿ Å×½ºÆ®´Â ±×³É ÀÚ½ÅÀÌ °¡Áø ¸ÞÀÏÀ» ÀüºÎ ¹Þ±â ½ÃµµÇÏ´Â °ÍÀ¸·Î ±¸ÇöÇÕ´Ï´Ù(ÃÖ´ë 20°³)
+	// ì‹¤ì œë¡œëŠ” í´ë¼ê°€ ë°›ìœ¼ë ¤ëŠ” MailDBIdë¥¼ ëª¨ì•„ì„œ ë°›ê¸° ìš”ì²­í•˜ë„ë¡ í•  ì˜ˆì •ìž…ë‹ˆë‹¤
+	// í•˜ì§€ë§Œ ìŠ¤íŠ¸ë ˆìŠ¤ë´‡ í…ŒìŠ¤íŠ¸ëŠ” ê·¸ëƒ¥ ìžì‹ ì´ ê°€ì§„ ë©”ì¼ì„ ì „ë¶€ ë°›ê¸° ì‹œë„í•˜ëŠ” ê²ƒìœ¼ë¡œ êµ¬í˜„í•©ë‹ˆë‹¤(ìµœëŒ€ 20ê°œ)
 	int count = 0;
 	MailDBIdList mailDBIds;
 	for (const auto& it : gatewaySessionContext->mMailBoxLists[static_cast<uint16>(MailBoxType::ACCOUNT)])
@@ -204,7 +204,7 @@ void ScenarioMail::TaskHandler_CS_REQ_MAIL_READ(
 
 	for (const auto& it : mailDBIds)
 	{
-		GConsolePrinter->OutConsoleAsync(Color::MAGENTA, L"account %llu - ¸ÞÀÏ ¹Þ±â ¿äÃ» : %llu", authSessionContext->mAccountId, it);
+		GConsolePrinter->OutConsoleAsync(Color::MAGENTA, L"account %llu - ë©”ì¼ ë°›ê¸° ìš”ì²­ : %llu", authSessionContext->mAccountId, it);
 	}	
 
 	TRACE_END;
@@ -298,7 +298,7 @@ void ScenarioMail::PacketHandler_SC_ACK_MAIL_SEND(
 		return;
 	}
 	
-	// »ý¼ºµÈ ¿ìÆíÀ» Ãß°¡
+	// ìƒì„±ëœ ìš°íŽ¸ì„ ì¶”ê°€
 	gatewaySessionContext->mMailBoxLists[static_cast<size_t>(pkt->Mail().mMailBoxType)].emplace_back(pkt->Mail());
 
 	mTaskHelper.CompleteTask();
@@ -339,7 +339,7 @@ void ScenarioMail::PacketHandler_SC_ACK_MAIL_READ(
 
 	pkt->ForEachReadMailDBIds<MailDBId>([&](const MailDBId* mailDBId)
 		{
-			GConsolePrinter->OutConsoleAsync(Color::BLUE, L"account %llu - ¸ÞÀÏ ¹Þ±â ¿Ï·á : %llu", authSessionContext->mAccountId, *mailDBId);
+			GConsolePrinter->OutConsoleAsync(Color::BLUE, L"account %llu - ë©”ì¼ ë°›ê¸° ì™„ë£Œ : %llu", authSessionContext->mAccountId, *mailDBId);
 			std::EraseIf(gatewaySessionContext->mMailBoxLists[boxType], [mailDBId](MailData& it) {
 				return it.mMailDBId == *mailDBId;
 				});
