@@ -1,0 +1,495 @@
+package server.stresser;
+
+import org.apache.log4j.Logger;
+import com.google.protobuf.ExtensionRegistry;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldPrepender;
+import io.netty.handler.codec.protobuf.ProtobufDecoder;
+import io.netty.handler.codec.protobuf.ProtobufEncoder;
+import io.netty.handler.timeout.IdleStateHandler;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Scanner;
+import java.util.concurrent.*;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
+
+import server.StresserConfig;
+import server.data.models.PlayerBagItemModel;
+import server.data.models.PlayerSkillModel;
+import server.network.Network;
+import server.network.SimpleDecoder;
+import server.network.SimpleEncoder;
+import server.stresser.ServerManager.Server;
+import server.stresser.ScenarioManager.Scenario;
+import server.stresser.ScenarioManager.StressTest;
+
+public class StresserManager {
+    public static final class EventType {
+        public static final int CONNECT_STRESSER_TO_SERVER = 1; // 서버에 연결하라는 이벤트
+        public static final int RECONNECT_STRESSER_TO_SERVER = 2; // 서버에 재연결하라는 이벤트
+    }
+
+    public static final StresserManager get() {
+        return singleton;
+    }
+    private static final StresserManager singleton = new StresserManager();
+    private static final Logger logger = Logger.getLogger(StresserManager.class);
+
+    private ConcurrentSkipListMap<Integer, Dummy> dummys = new ConcurrentSkipListMap<>();
+    private int dummyCount = 0;
+
+    private Dummy dummy;
+
+    public StresserHandler handler = new StresserHandler();
+    private ExecutorService executorService = Executors.newCachedThreadPool(); // 채널들 여는데 사용되는 스레드풀
+    private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(8); // 각 세션에서 태스크 만들어서 주기적으로 실행시킬때 사용되는 스레드풀
+    private ScheduledExecutorService stresserScheduledExecutorService = Executors.newScheduledThreadPool(8);
+    private ScheduledFuture stresserTaskFuture = null;
+
+    private Queue<Task> tasks = new ConcurrentLinkedQueue<>(); // 더미 스트레서가 메인 스트레서로 부터 명령을 받을때 쌓이는 태스크(서버에 연결하거나 재연결하는 명령, 시나리오 실행명령은 이곳에 쌓이지 않음!)
+    private List<Long> playerIds = new ArrayList<>();
+
+    private int window = Window.RUN_SCENARIO;
+    private int type = 0;
+    private int id = 0;
+    private boolean isRun = false;
+    private boolean repeat = false;
+
+    private long processTime;
+    private String[] sScenarios;
+    private DateFormat df = new SimpleDateFormat("ss.SSSS");
+    boolean isDisconnect = false;
+
+    public static final class Window {
+        public static final int MAIN = 0;
+        public static final int RUN_STRESS_TEST = 1;
+        public static final int RUN_SCENARIO = 2;
+        public static final int RESET = 3;
+        public static final int QUIT = 4;
+    }
+
+    public class Task {
+        public int id;
+        public int type;
+        public int number = 0;
+
+        public Task (int id, int type, int number) {
+            this.id = id;
+            this.type = type;
+            this.number = number;
+        }
+    }
+
+    public class Dummy {
+        public int id;
+
+        public int sessionNum = 0; // 더미 스트레서에 존재하는 세션들 중 현재 진행중인 wait가 true인 컨텐츠를 끝낸 세션 수
+
+        private boolean connectedToMain = false;
+        private boolean connectedToServer = false; // 더미 스트레서가 서버에 연결되었는가
+        private int connectedChannelCount = 0; // 더미 스트레서에 연결된 채널 수 = 생성된 세션 수
+
+        public Dummy(int id) {
+            this.id = id;
+        }
+
+        public void setConnectedToServer(boolean connectedToServer) {
+            this.connectedToServer = connectedToServer;
+        }
+
+        public synchronized void setConnectedChannel(int count) { this.connectedChannelCount = count; }
+
+        public synchronized void addConnectedChannel(int count) { this.connectedChannelCount += count; }
+
+        public int getConnectedChannelCount() { return this.connectedChannelCount; }
+    }
+
+    public void init() throws InterruptedException{
+
+        dummyCount = StresserConfig.dummyCount;
+        for (int i = 0; i < dummyCount; i++ ){
+            id = (int) (Math.random() * 100000000);
+
+            // 더미 생성
+            putDummy(id);
+//            dummy = new Dummy(id);
+            requestTask(id, EventType.CONNECT_STRESSER_TO_SERVER, StresserConfig.maxPlayer);
+        }
+    }
+
+    public void start() throws Exception {
+        startMainStresser();
+    }
+
+
+    public void initializeDummyConnectedToServer() {
+        for (Dummy dummy : dummys.values()) {
+            dummy.connectedToServer = false;
+        }
+    }
+
+
+    public int countDummyConnectedToServer() {
+        int count = 0;
+        for (Dummy dummy : dummys.values()) {
+            if (dummy.connectedToServer) count ++;
+        }
+
+        return count;
+    }
+
+    public int countDummyConnectedToMain() {
+        int count = 0;
+        for (Dummy dummy : dummys.values()) {
+            if (dummy.connectedToMain) count ++;
+        }
+
+        return count;
+    }
+
+    public void initializeDummys() { dummys = new ConcurrentSkipListMap<>(); }
+
+    public boolean isDummyConnectedToServer() {
+        return dummy.connectedToServer;
+    }
+
+    public void startMainStresser() throws Exception {
+
+        if (!repeat) {
+            new Thread() {
+                @Override
+                public void run() {
+                    System.out.println("Waiting for dummy stressers connecting to server...");
+                    try {
+                        startDummyStresser();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }.start();
+
+            // 더미 스트레서가 서버에 연결될 때 까지 대기
+            System.out.println("Start to connect server channel playerNum - " + StresserConfig.maxPlayer);
+            while (countDummyConnectedToServer() < dummyCount) {
+                Thread.sleep(500);
+            }
+            System.out.println("Dummys Connected To Server");
+
+            //        Scanner scanner = new Scanner(System.in);
+            sScenarios = StresserConfig.scenarios;
+        }
+
+        //TODO:
+        // 부하테스트로 임시로 변경
+//        while (true) {
+        switch (window) {
+            case Window.MAIN: {
+                String menu[] = {"Run stress test", "Run scenario", "Reset", "Quit"};
+                Utils.printMultiMenu("Choose the number of action", menu);
+
+//                String chooseStr = scanner.nextLine();
+
+//                if (!Utils.checkValidNumber(1, menu.length, chooseStr))
+//                    continue;
+
+//                    this.window = Integer.parseInt(chooseStr);
+                break;
+            }
+            case Window.RUN_STRESS_TEST: {
+                List<StressTest> stressTests = ScenarioManager.get().getStressTestsInfo();
+
+                if (stressTests.size() == 0) {
+                    System.out.println("There is no stress tests");
+                    this.window = Window.MAIN;
+                    break;
+                }
+
+                if (isRun) {
+                    System.out.println("Reconnect server.. Retry run stress test");
+                    this.window = Window.RESET;
+                    break;
+                }
+
+                System.out.println("Choose the stress tests");
+                System.out.println("0. Go back to menu");
+                for (int i = 0; i < stressTests.size(); i++) {
+                    System.out.println((i + 1) + ". " + stressTests.get(i).name);
+                }
+
+//                String stressTestStr = scanner.nextLine();
+
+//                if (stressTestStr.equals("0")) {
+//                    this.window = Window.MAIN;
+//                    break;
+//                }
+                processTime = System.currentTimeMillis();
+//                ScenarioManager.get().runStressTest(Integer.parseInt(stressTestStr) - 1);
+
+                processTime = (System.currentTimeMillis() - processTime);
+                logger.info("Stress Test End : " + df.format(processTime));
+                logger.info("==============================================");
+
+                this.window = Window.RESET;
+                this.isRun = true;
+                break;
+            }
+            case Window.RUN_SCENARIO: {
+                List<Scenario> scenarios = ScenarioManager.get().getScenariosInfo();
+
+                if (scenarios.size() == 0) {
+                    System.out.println("There is no scenarios");
+                    System.exit(1);
+                    break;
+                }
+//                System.out.println("Choose the scenario");
+//                System.out.println("0. Go back to menu");
+//                for (int i = 0; i < scenarios.size(); i++) {
+//                    System.out.println((i+1) + ". " + scenarios.get(i).name);
+//                }
+//
+//                String scenarioStr = scanner.nextLine();
+//
+//                if (!Utils.checkValidNumber(0, scenarios.size(), scenarioStr))
+//                    break;
+//
+//
+//                if (scenarioStr.equals("0")) {
+//                    this.window = Window.MAIN;
+//                    break;
+//                }
+
+                do {
+                    for (String s : sScenarios) {
+                        ScenarioManager.get().runScenario(Integer.parseInt(s) - 1);
+                    }
+                    StresserManager.get().repeat = StresserConfig.repeat;
+                    // 재시작시에 유저정보 초기화
+//                    initPlayer();
+                } while (StresserManager.get().repeat || !isDisconnect);
+
+                System.out.print("Close all session");
+                handler.closeAllChannel();
+                System.exit(0);
+
+                break;
+            }
+            case Window.RESET: {
+                initializeDummyConnectedToServer();
+                // 더미 스트레서가 서버에 재연결 될 때까지 기다림
+                System.out.println("Start to reconnect server channel");
+//                requestTask(id, EventType.RECONNECT_STRESSER_TO_SERVER, StresserConfig.maxPlayer);
+                handler.closeAllChannel();
+
+                while (!isDummyConnectedToServer()) {
+                    Thread.sleep(500);
+                }
+
+                this.window = Window.MAIN;
+                this.isRun = false;
+                break;
+            }
+            case Window.QUIT: {
+                handler.closeAllChannel();
+                System.exit(0);
+                break;
+            }
+        }
+    }
+
+    public void startDummyStresser() throws Exception {
+        // 더미 스트레서에서 실행되는 부분
+
+        EventLoopGroup workers = new NioEventLoopGroup();
+
+        final ExtensionRegistry registry = ExtensionRegistry.newInstance();
+        Network.registerAllExtensions(registry);
+        Bootstrap b = new Bootstrap();
+        b.group(workers)
+                .channel(NioSocketChannel.class)
+                .option(ChannelOption.SO_REUSEADDR, true)
+                .option(ChannelOption.TCP_NODELAY, true)
+                .handler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    public void initChannel(SocketChannel ch) throws Exception {
+                        ChannelPipeline p = ch.pipeline();
+                        p.addLast(new IdleStateHandler(50, 0, 0));
+                        p.addLast("frameDecoder", new LengthFieldBasedFrameDecoder(81920, 0, 4, 0, 4));
+                        p.addLast("bitDecoder", new SimpleDecoder());
+                        p.addLast("decoder", new ProtobufDecoder(Network.Packet.getDefaultInstance(), registry));
+
+                        p.addLast("frameEncoder", new LengthFieldPrepender(4));
+                        p.addLast("bitEncoder", new SimpleEncoder());
+                        p.addLast("encoder", new ProtobufEncoder());
+                        p.addLast("handler", handler);
+                    }
+                });
+
+        while (true) {
+            if (!this.tasks.isEmpty()) {
+                Task task = this.tasks.poll();
+                if (task != null) {
+                    switch (task.type) {
+                        case EventType.CONNECT_STRESSER_TO_SERVER: {
+                            System.out.println("CONNECT_STRESSER_TO_SERVER");
+
+                            List<String> hosts = new ArrayList<>();
+
+                            for (Server server : ServerManager.get().getServers().values()) {
+                                hosts.add(server.host);
+                            }
+
+                            for (int i = 0; i < task.number; i++) {
+                                String host = hosts.get(i % hosts.size()).split(":")[0];
+                                int port = Integer.parseInt(hosts.get(i % hosts.size()).split(":")[1]);
+
+                                final int finalI = i;
+
+                                executorService.submit((Runnable) () -> {
+                                    ChannelFuture cf = null;
+                                    int connect_count = 0;
+                                    try {
+                                        while (true) {
+                                            // 연결이 끊어질 경우 재연결을 시도한다
+                                            cf = b.connect(host, port).await();
+
+                                            if (cf.isSuccess()) {
+                                                connected();
+                                                handler.start(cf.channel(), finalI);
+                                                connect_count += 1;
+                                                cf.channel().closeFuture().await();
+                                            } else {
+                                                isDisconnect = true;
+                                            }
+
+                                            Thread.sleep(500);
+                                        }
+
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    System.out.print("Connected Channel - " + connect_count);
+                                });
+                            }
+
+                            // 현재 더미 스트레서에서 연결된 모든 채널(세션) 수가 연결되어야 할 만큼의 채널(세션) 수 만큼 되기 전까지 대기
+                            System.out.print("Waiting for " + task.id+ "channel connect to server...\n");
+                            while (getChannelNumConnectedToServer() < task.number) {
+                                Thread.sleep(500);
+                            }
+
+                            System.out.println("STRESSER_" + task.id + " connected to server!!!");
+
+                            // 현재 더미 스트레서에서 모든 채널(세션)이 서버에 연결되었을 때 메인 스트레서에게 알림
+                            dummys.get(task.id).setConnectedToServer(true);
+
+                            System.out.println(task.id +"channel connected to server!!!");
+                            break;
+                        }
+                        case EventType.RECONNECT_STRESSER_TO_SERVER: {
+                            System.out.println("RECONNECT_STRESSER_TO_SERVER");
+                            // 재연결을 위해 현재 더미 스트레서에 연결되어 있는 채널 개수 초기화
+//                            initializeChannelNumConnectedToServer();
+//
+//                            // 현재 더미 스트레서에서 연결된 모든 채널(세션) 수가 연결되어야 할 만큼의 채널(세션) 수 만큼 되기 전까지 대기
+//                            while (getChannelNumConnectedToServer() < task.number) {
+//                                Thread.sleep(500);
+//                            }
+//                            // 현재 더미 스트레서에서 모든 채널(세션)이 서버에 재연결되었을 때 메인 스트레서에게 알림
+//                            System.out.println("STRESSER_" + StresserManager.get().getID() + " reconnected to server");
+//                            Dummy dummy = StresserManager.get().getDummy();
+//                            dummy.setConnectedToServer(true);
+//
+//                            System.out.println("All channel reconnected to server");
+
+                            initializeDummyConnectedToServer();
+                            // 더미 스트레서가 서버에 재연결 될 때까지 기다림
+                            System.out.println("Start to reconnect server channel");
+
+                        }
+                    }
+                }
+            } else {
+                Thread.sleep(50);
+            }
+        }
+    }
+
+    public void reconnected() throws Exception {
+        isDisconnect = false;
+
+        this.window = Window.RUN_SCENARIO;
+        this.isRun = false;
+        dummys = new ConcurrentSkipListMap<>();
+        handler.closeAllChannel();
+        handler = new StresserHandler();
+        init();
+        start();
+    }
+
+    public void connected() {
+        dummy.addConnectedChannel(1);
+    }
+
+    public int getChannelNumConnectedToServer() {
+        return dummy.getConnectedChannelCount();
+    }
+
+    public void initializeChannelNumConnectedToServer() {
+        dummy.setConnectedChannel(0);
+    }
+
+    public void requestTask(int id, int type, int number) {
+        Task task = new Task(id, type, number);
+        this.tasks.add(task);
+    }
+
+    public Dummy getDummy() {
+        return this.dummy;
+    }
+
+    public int getType() {
+        return this.type;
+    }
+
+    public int getID() {
+        return this.id;
+    }
+
+    public boolean getRepeat() {
+        return this.repeat;
+    }
+
+    public synchronized void addSessionNum(int number) { dummy.sessionNum += number; }
+
+    public void putDummy(int id) {
+        dummy = new Dummy(id);
+
+        dummys.put(id, dummy);
+    }
+
+    public ScheduledExecutorService getScheduledExecutorService() {
+        return this.scheduledExecutorService;
+    }
+
+    public void addPlayer(long id) {
+        if (!playerIds.contains(id))
+            playerIds.add(id);
+    }
+
+    public void initPlayer() {
+        for (long id : playerIds) {
+            PlayerSkillModel.removeAllSkills(id);
+        }
+    }
+}
