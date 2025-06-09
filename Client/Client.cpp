@@ -38,7 +38,7 @@ struct CardData {
     uint32_t user_id;
     char user_name[100];
 
-    CardData() : user_id(0) { 
+    CardData() : user_id(0) {
         memset(user_name, 0, sizeof(user_name));
     }
 };
@@ -47,22 +47,22 @@ struct CardData {
 class RoomClient {
 public:
     RoomClient(boost::asio::io_context& io_context)
-        : io_context_(io_context), socket_(io_context),
-        strand_(boost::asio::make_strand(io_context)),
-        current_room_id_(0), user_id_(0) {
+        : _io_context(io_context), _socket(io_context),
+        _strand(boost::asio::make_strand(io_context)),
+        _current_room_id(0), _user_id(0) {
     }
 
     void connect(const std::string& host, const std::string& port) {
-        tcp::resolver resolver(io_context_);
+        tcp::resolver resolver(_io_context);
         auto endpoints = resolver.resolve(host, port);
 
-        boost::asio::async_connect(socket_, endpoints,
+        boost::asio::async_connect(_socket, endpoints,
             boost::bind(&RoomClient::handle_connect, this,
                 boost::asio::placeholders::error));
     }
 
     void disconnect() {
-        boost::asio::post(strand_,
+        boost::asio::post(_strand,
             boost::bind(&RoomClient::do_close, this));
     }
 
@@ -71,18 +71,18 @@ public:
         Message msg;
         msg.type = MSG_JOIN_ROOM;
         msg.room_id = room_id;
-        msg.user_id = user_id_;
+        msg.user_id = _user_id;
         msg.data_length = 0;
         send_message(msg);
     }
 
     // 룸 퇴장
     void leave_room() {
-        if (current_room_id_ > 0) {
+        if (_current_room_id > 0) {
             Message msg;
             msg.type = MSG_LEAVE_ROOM;
-            msg.room_id = current_room_id_;
-            msg.user_id = user_id_;
+            msg.room_id = _current_room_id;
+            msg.user_id = _user_id;
             msg.data_length = 0;
             send_message(msg);
         }
@@ -90,11 +90,11 @@ public:
 
     // 채팅 메시지 전송
     void send_chat(const std::string& text) {
-        if (current_room_id_ > 0) {
+        if (_current_room_id > 0) {
             Message msg;
             msg.type = MSG_CHAT;
-            msg.room_id = current_room_id_;
-            msg.user_id = user_id_;
+            msg.room_id = _current_room_id;
+            msg.user_id = _user_id;
             msg.data_length = text.length();
             strcpy(msg.data, text.c_str());
             send_message(msg);
@@ -108,18 +108,18 @@ public:
     void request_room_list() {
         Message msg;
         msg.type = MSG_ROOM_LIST;
-        msg.user_id = user_id_;
+        msg.user_id = _user_id;
         msg.data_length = 0;
         send_message(msg);
     }
 
     // 사용자 목록 요청
     void request_user_list() {
-        if (current_room_id_ > 0) {
+        if (_current_room_id > 0) {
             Message msg;
             msg.type = MSG_USER_LIST;
-            msg.room_id = current_room_id_;
-            msg.user_id = user_id_;
+            msg.room_id = _current_room_id;
+            msg.user_id = _user_id;
             msg.data_length = 0;
             send_message(msg);
         }
@@ -129,11 +129,11 @@ public:
     }
 
     bool is_connected() const {
-        return socket_.is_open();
+        return _socket.is_open();
     }
 
     uint32_t get_current_room_id() const {
-        return current_room_id_;
+        return _current_room_id;
     }
 
 private:
@@ -148,16 +148,16 @@ private:
     }
 
     void start_read() {
-        boost::asio::async_read(socket_,
-            boost::asio::buffer(&read_msg_, sizeof(Message)),
-            boost::asio::bind_executor(strand_,
+        boost::asio::async_read(_socket,
+            boost::asio::buffer(&_read_msg, sizeof(Message)),
+            boost::asio::bind_executor(_strand,
                 boost::bind(&RoomClient::handle_read, this,
                     boost::asio::placeholders::error)));
     }
 
     void handle_read(const boost::system::error_code& error) {
         if (!error) {
-            process_message(read_msg_);
+            process_message(_read_msg);
             start_read();
         }
         else {
@@ -189,13 +189,13 @@ private:
     }
 
     void handle_join_room_response(const Message& msg) {
-        current_room_id_ = msg.room_id;
+        _current_room_id = msg.room_id;
         std::cout << "\n=== " << msg.data << " ===" << std::endl;
-        std::cout << "Current room: " << current_room_id_ << std::endl;
+        std::cout << "Current room: " << _current_room_id << std::endl;
     }
 
     void handle_leave_room_response(const Message& msg) {
-        current_room_id_ = 0;
+        _current_room_id = 0;
         std::cout << "\n=== " << msg.data << " ===" << std::endl;
     }
 
@@ -221,30 +221,30 @@ private:
     }
 
     void send_message(const Message& msg) {
-        boost::asio::post(strand_,
+        boost::asio::post(_strand,
             boost::bind(&RoomClient::do_send_message, this, msg));
     }
 
     void do_send_message(const Message& msg) {
-        bool write_in_progress = !write_msgs_.empty();
-        write_msgs_.push_back(msg);
+        bool write_in_progress = !_write_msgs.empty();
+        _write_msgs.push_back(msg);
         if (!write_in_progress) {
             start_write();
         }
     }
 
     void start_write() {
-        boost::asio::async_write(socket_,
-            boost::asio::buffer(&write_msgs_.front(), sizeof(Message)),
-            boost::asio::bind_executor(strand_,
+        boost::asio::async_write(_socket,
+            boost::asio::buffer(&_write_msgs.front(), sizeof(Message)),
+            boost::asio::bind_executor(_strand,
                 boost::bind(&RoomClient::handle_write, this,
                     boost::asio::placeholders::error)));
     }
 
     void handle_write(const boost::system::error_code& error) {
         if (!error) {
-            write_msgs_.pop_front();
-            if (!write_msgs_.empty()) {
+            _write_msgs.pop_front();
+            if (!_write_msgs.empty()) {
                 start_write();
             }
         }
@@ -255,23 +255,23 @@ private:
     }
 
     void do_close() {
-        socket_.close();
+        _socket.close();
         std::cout << "Disconnected from server." << std::endl;
     }
 
-    boost::asio::io_context& io_context_;
-    tcp::socket socket_;
-    boost::asio::strand<boost::asio::io_context::executor_type> strand_;
-    Message read_msg_;
-    std::deque<Message> write_msgs_;
-    uint32_t current_room_id_;
-    uint32_t user_id_;
+    boost::asio::io_context& _io_context;
+    tcp::socket _socket;
+    boost::asio::strand<boost::asio::io_context::executor_type> _strand;
+    Message _read_msg;
+    std::deque<Message> _write_msgs;
+    uint32_t _current_room_id;
+    uint32_t _user_id;
 };
 
 // 사용자 인터페이스 클래스
 class UserInterface {
 public:
-    UserInterface(RoomClient& client) : client_(client) {}
+    UserInterface(RoomClient& client) : _client(client) {}
 
     void show_menu() {
         std::cout << "\n=== Room Chat Client ===" << std::endl;
@@ -290,7 +290,7 @@ public:
         show_menu();
 
         std::string input;
-        while (client_.is_connected() && std::getline(std::cin, input)) {
+        while (_client.is_connected() && std::getline(std::cin, input)) {
             if (input.empty()) continue;
 
             if (input[0] == '/') {
@@ -298,7 +298,7 @@ public:
             }
             else {
                 // 일반 채팅 메시지
-                client_.send_chat(input);
+                _client.send_chat(input);
             }
 
             if (input == "/quit") {
@@ -316,27 +316,27 @@ private:
         if (command == "/join") {
             uint32_t room_id;
             if (iss >> room_id) {
-                client_.join_room(room_id);
+                _client.join_room(room_id);
             }
             else {
                 std::cout << "Usage: /join <room_id>" << std::endl;
             }
         }
         else if (command == "/leave") {
-            client_.leave_room();
+            _client.leave_room();
         }
         else if (command == "/rooms") {
-            client_.request_room_list();
+            _client.request_room_list();
         }
         else if (command == "/users") {
-            client_.request_user_list();
+            _client.request_user_list();
         }
         /*else if (command == "/help") {
             show_menu();
         }*/
         else if (command == "/quit") {
             std::cout << "Disconnecting..." << std::endl;
-            client_.disconnect();
+            _client.disconnect();
         }
         else {
             std::cout << "Unknown command: " << command << std::endl;
@@ -344,7 +344,7 @@ private:
         }
     }
 
-    RoomClient& client_;
+    RoomClient& _client;
 };
 
 // 메인 함수
