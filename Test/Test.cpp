@@ -15,8 +15,6 @@
 #include <cstring>
 #include <deque>
 
-
-
 using boost::asio::ip::tcp;
 
 // 메시지 타입 정의
@@ -41,23 +39,17 @@ struct Message {
     }
 };
 
-// 전방 선언
-class Session;
-class Room;
-class RoomManager;
-
-typedef boost::shared_ptr<Session> SessionPtr;
-typedef boost::shared_ptr<Room> RoomPtr;
-
-// 세션 클래스
+// 1단계: 기본 세션 클래스 (다른 클래스 참조 최소화)
 class Session : public boost::enable_shared_from_this<Session> {
 public:
-    Session(boost::asio::io_context& io_context, RoomManager& room_manager)
-        : _socket(io_context), _room_manager(room_manager),
-        _strand(boost::asio::make_strand(io_context)), _user_id(0), _current_room_id(0) {
+    Session(boost::asio::io_context& io_context)
+        : _socket(io_context), _strand(boost::asio::make_strand(io_context)),
+        _user_id(0), _current_room_id(0), _room_manager(nullptr) {
     }
 
     tcp::socket& socket() { return _socket; }
+
+    void set_room_manager(class RoomManager* rm) { _room_manager = rm; }
 
     void start() {
         _user_id = generate_user_id();
@@ -73,6 +65,10 @@ public:
     uint32_t get_user_id() const { return _user_id; }
     uint32_t get_current_room_id() const { return _current_room_id; }
     void set_current_room_id(uint32_t room_id) { _current_room_id = room_id; }
+
+    // 구현을 나중에 정의 (RoomManager가 정의된 후)
+    void handle_message();
+    void leave_current_room();
 
 private:
     void read_header() {
@@ -92,8 +88,6 @@ private:
             handle_disconnect();
         }
     }
-
-    void handle_message();
 
     void do_send_message(const Message& msg) {
         bool write_in_progress = !_write_msgs.empty();
@@ -131,15 +125,13 @@ private:
         _socket.close();
     }
 
-    void leave_current_room();
-
     uint32_t generate_user_id() {
         static uint32_t id_counter = 1000;
         return ++id_counter;
     }
 
     tcp::socket _socket;
-    RoomManager& _room_manager;
+    class RoomManager* _room_manager;  // 포인터로 참조
     boost::asio::strand<boost::asio::io_context::executor_type> _strand;
     Message _read_msg;
     std::deque<Message> _write_msgs;
@@ -147,8 +139,11 @@ private:
     uint32_t _current_room_id;
 };
 
+// typedef 정의
+typedef boost::shared_ptr<Session> SessionPtr;
+typedef boost::shared_ptr<class Room> RoomPtr;
 
-// 룸 클래스
+// 2단계: Room 클래스 정의
 class Room {
 public:
     Room(uint32_t id, const std::string& name) : _id(id), _name(name) {}
@@ -211,10 +206,27 @@ private:
     std::set<SessionPtr> _members;
 };
 
-// 메시지 핸들러 클래스
-class MessageHandler {
+// 3단계: RoomManager 클래스 정의
+class RoomManager {
 public:
-    MessageHandler(RoomManager& room_manager) : _room_manager(room_manager) {}
+    RoomManager() {
+        // 기본 룸들 생성
+        create_room(1, "General");
+        create_room(2, "Gaming");
+        create_room(3, "Development");
+    }
+
+    RoomPtr get_room(uint32_t room_id) {
+        auto it = _rooms.find(room_id);
+        return (it != _rooms.end()) ? it->second : RoomPtr();
+    }
+
+    RoomPtr create_room(uint32_t room_id, const std::string& name) {
+        auto room = boost::make_shared<Room>(room_id, name);
+        _rooms[room_id] = room;
+        std::cout << "Room created: " << room_id << " - " << name << std::endl;
+        return room;
+    }
 
     void handle_message(SessionPtr session, const Message& msg) {
         switch (msg.type) {
@@ -238,154 +250,118 @@ public:
         }
     }
 
-private:
-    void handle_join_room(SessionPtr session, const Message& msg);
-    void handle_leave_room(SessionPtr session, const Message& msg);
-    void handle_chat_message(SessionPtr session, const Message& msg);
-    void handle_room_list_request(SessionPtr session, const Message& msg);
-    void handle_user_list_request(SessionPtr session, const Message& msg);
-
-    RoomManager& _room_manager;
-};
-
-// 룸 매니저 클래스
-class RoomManager {
-public:
-    RoomManager() : _message_handler(*this) {
-        // 기본 룸들 생성
-        create_room(1, "General");
-        create_room(2, "Gaming");
-        create_room(3, "Development");
-    }
-
-    RoomPtr get_room(uint32_t room_id) {
-        auto it = _rooms.find(room_id);
-        return (it != _rooms.end()) ? it->second : RoomPtr();
-    }
-
-    RoomPtr create_room(uint32_t room_id, const std::string& name) {
-        auto room = boost::make_shared<Room>(room_id, name);
-        _rooms[room_id] = room;
-        std::cout << "Room created: " << room_id << " - " << name << std::endl;
-        return room;
-    }
-
-    void handle_message(SessionPtr session, const Message& msg) {
-        _message_handler.handle_message(session, msg);
-    }
-
     std::map<uint32_t, RoomPtr> get_all_rooms() const {
         return _rooms;
     }
 
 private:
+    void handle_join_room(SessionPtr session, const Message& msg) {
+        auto room = get_room(msg.room_id);
+        if (room) {
+            // 현재 룸에서 나가기
+            if (session->get_current_room_id() > 0) {
+                auto current_room = get_room(session->get_current_room_id());
+                if (current_room) {
+                    current_room->leave(session);
+                }
+            }
+
+            // 새 룸에 입장
+            room->join(session);
+
+            // 입장 확인 메시지 전송
+            Message response;
+            response.type = MSG_JOIN_ROOM;
+            response.room_id = msg.room_id;
+            response.user_id = session->get_user_id();
+            std::string success_msg = "Successfully joined room " + room->get_name();
+            response.data_length = success_msg.length();
+            strcpy(response.data, success_msg.c_str());
+            session->send_message(response);
+        }
+    }
+
+    void handle_leave_room(SessionPtr session, const Message& msg) {
+        auto room = get_room(session->get_current_room_id());
+        if (room) {
+            room->leave(session);
+
+            Message response;
+            response.type = MSG_LEAVE_ROOM;
+            response.room_id = msg.room_id;
+            response.user_id = session->get_user_id();
+            std::string leave_msg = "Left room " + room->get_name();
+            response.data_length = leave_msg.length();
+            strcpy(response.data, leave_msg.c_str());
+            session->send_message(response);
+        }
+    }
+
+    void handle_chat_message(SessionPtr session, const Message& msg) {
+        auto room = get_room(session->get_current_room_id());
+        if (room) {
+            Message broadcast_msg = msg;
+            broadcast_msg.user_id = session->get_user_id();
+            room->broadcast(broadcast_msg);
+            std::cout << "Chat in room " << room->get_id() << " from user "
+                << session->get_user_id() << ": " << msg.data << std::endl;
+        }
+    }
+
+    void handle_room_list_request(SessionPtr session, const Message& msg) {
+        Message response;
+        response.type = MSG_ROOM_LIST;
+        response.user_id = session->get_user_id();
+
+        std::string room_list = "Available rooms:\n";
+        auto rooms = get_all_rooms();
+        for (const auto& pair : rooms) {
+            auto room = pair.second;
+            room_list += std::to_string(room->get_id()) + ": " + room->get_name()
+                + " (" + std::to_string(room->get_member_count()) + " users)\n";
+        }
+
+        response.data_length = room_list.length();
+        strcpy(response.data, room_list.c_str());
+        session->send_message(response);
+    }
+
+    void handle_user_list_request(SessionPtr session, const Message& msg) {
+        auto room = get_room(session->get_current_room_id());
+        if (room) {
+            Message response;
+            response.type = MSG_USER_LIST;
+            response.room_id = room->get_id();
+            response.user_id = session->get_user_id();
+
+            std::string user_list = "Users in room " + room->get_name() + ":\n";
+            auto member_ids = room->get_member_ids();
+            for (uint32_t id : member_ids) {
+                user_list += "User " + std::to_string(id) + "\n";
+            }
+
+            response.data_length = user_list.length();
+            strcpy(response.data, user_list.c_str());
+            session->send_message(response);
+        }
+    }
+
     std::map<uint32_t, RoomPtr> _rooms;
-    MessageHandler _message_handler;
 };
 
-// Session 클래스의 메서드 구현
+// 4단계: 지연된 Session 메서드 구현
 void Session::handle_message() {
-    _room_manager.handle_message(shared_from_this(), _read_msg);
+    if (_room_manager) {
+        _room_manager->handle_message(shared_from_this(), _read_msg);
+    }
 }
 
 void Session::leave_current_room() {
-    if (_current_room_id > 0) {
-        auto room = _room_manager.get_room(_current_room_id);
+    if (_room_manager && _current_room_id > 0) {
+        auto room = _room_manager->get_room(_current_room_id);
         if (room) {
             room->leave(shared_from_this());
         }
-    }
-}
-
-// MessageHandler 메서드 구현
-void MessageHandler::handle_join_room(SessionPtr session, const Message& msg) {
-    auto room = _room_manager.get_room(msg.room_id);
-    if (room) {
-        // 현재 룸에서 나가기
-        if (session->get_current_room_id() > 0) {
-            auto current_room = _room_manager.get_room(session->get_current_room_id());
-            if (current_room) {
-                current_room->leave(session);
-            }
-        }
-
-        // 새 룸에 입장
-        room->join(session);
-
-        // 입장 확인 메시지 전송
-        Message response;
-        response.type = MSG_JOIN_ROOM;
-        response.room_id = msg.room_id;
-        response.user_id = session->get_user_id();
-        std::string success_msg = "Successfully joined room " + room->get_name();
-        response.data_length = success_msg.length();
-        strcpy(response.data, success_msg.c_str());
-        session->send_message(response);
-    }
-}
-
-void MessageHandler::handle_leave_room(SessionPtr session, const Message& msg) {
-    auto room = _room_manager.get_room(session->get_current_room_id());
-    if (room) {
-        room->leave(session);
-
-        Message response;
-        response.type = MSG_LEAVE_ROOM;
-        response.room_id = msg.room_id;
-        response.user_id = session->get_user_id();
-        std::string leave_msg = "Left room " + room->get_name();
-        response.data_length = leave_msg.length();
-        strcpy(response.data, leave_msg.c_str());
-        session->send_message(response);
-    }
-}
-
-void MessageHandler::handle_chat_message(SessionPtr session, const Message& msg) {
-    auto room = _room_manager.get_room(session->get_current_room_id());
-    if (room) {
-        Message broadcast_msg = msg;
-        broadcast_msg.user_id = session->get_user_id();
-        room->broadcast(broadcast_msg);
-        std::cout << "Chat in room " << room->get_id() << " from user "
-            << session->get_user_id() << ": " << msg.data << std::endl;
-    }
-}
-
-void MessageHandler::handle_room_list_request(SessionPtr session, const Message& msg) {
-    Message response;
-    response.type = MSG_ROOM_LIST;
-    response.user_id = session->get_user_id();
-
-    std::string room_list = "Available rooms:\n";
-    auto rooms = _room_manager.get_all_rooms();
-    for (const auto& pair : rooms) {
-        auto room = pair.second;
-        room_list += std::to_string(room->get_id()) + ": " + room->get_name()
-            + " (" + std::to_string(room->get_member_count()) + " users)\n";
-    }
-
-    response.data_length = room_list.length();
-    strcpy(response.data, room_list.c_str());
-    session->send_message(response);
-}
-
-void MessageHandler::handle_user_list_request(SessionPtr session, const Message& msg) {
-    auto room = _room_manager.get_room(session->get_current_room_id());
-    if (room) {
-        Message response;
-        response.type = MSG_USER_LIST;
-        response.room_id = room->get_id();
-        response.user_id = session->get_user_id();
-
-        std::string user_list = "Users in room " + room->get_name() + ":\n";
-        auto member_ids = room->get_member_ids();
-        for (uint32_t id : member_ids) {
-            user_list += "User " + std::to_string(id) + "\n";
-        }
-
-        response.data_length = user_list.length();
-        strcpy(response.data, user_list.c_str());
-        session->send_message(response);
     }
 }
 
@@ -399,7 +375,9 @@ public:
 
 private:
     void start_accept() {
-        SessionPtr new_session = boost::make_shared<Session>(_io_context, _room_manager);
+        SessionPtr new_session = boost::make_shared<Session>(_io_context);
+        new_session->set_room_manager(&_room_manager);  // 매니저 설정
+
         _acceptor.async_accept(new_session->socket(),
             boost::bind(&RoomServer::handle_accept, this, new_session,
                 boost::asio::placeholders::error));
