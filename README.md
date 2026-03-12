@@ -3,7 +3,7 @@ Sameple Code
 
 
 C#
-- WebSocket과 Redis Pub/Sub을 결합한 실시간 채팅 서버
+- WebSocket과 Redis Pub/Sub을 결합한 웹소켓 채팅 서버
 
 C++
 - 간략한 작업 코드내용과 각종 프로젝트 제작당시의 코드입니다.
