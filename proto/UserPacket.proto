@@ -1,0 +1,49 @@
+syntax = "proto3";
+package protobuf;
+
+import "Common.proto";
+
+message UserInfo {
+	string id = 1;
+	string name = 2;
+}
+
+message C_Login {
+	string uuid = 1;				// 로그인 ID (DB user.uuid)
+}
+
+message S_Login {
+	StatusCode status_code = 1;
+	UserInfo user_info = 2;
+	uint32 channel = 3;				// 배정된 로비 채널(1부터, 로그인 성공 시)
+	reserved 4, 5;					// 삭제된 재접속 복귀 필드(room_id, room_name) — 번호 재사용 금지
+}
+
+// 서버→클라 전용: 로그인 요청이 대기열에 있을 때 순번 알림(대기 진입 시 + 1초마다). 최종 결과는 S_Login으로 받음
+message S_LoginQueue {
+	uint32 position = 1;			// 내 순번(1부터)
+	uint32 waiting = 2;				// 전체 대기 인원
+}
+
+// 클라→서버 전용: 연결 유지 신호. 서버는 마지막 수신 시각만 갱신하고 버림(응답 없음)
+message C_Heartbeat {
+}
+
+message C_Logout {
+}
+
+message S_Logout {
+	StatusCode status_code = 1;
+}
+
+// 전체 접속자 요약(로그인한 유저만): total = lobby + in_room
+message C_UserList {
+}
+
+message S_UserList {
+	StatusCode status_code = 1;
+	reserved 2;						// 이전: repeated OnlineUser users (유저별 목록, 17번에서 제거)
+	uint32 total = 3;
+	uint32 lobby = 4;				// 로비에 있는 인원(모든 채널 합)
+	uint32 in_room = 5;				// 방 안에 있는 인원
+}

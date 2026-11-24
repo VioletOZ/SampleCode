@@ -1,0 +1,12 @@
+{
+  "name": "ozserver",
+  "version-string": "0.1.0",
+  "description": "OZServer (TCP room server) and ServerTest dependencies",
+  "dependencies": [
+    "protobuf",
+    "mysql-connector-cpp",
+    "redis-plus-plus",
+    "gtest"
+  ],
+  "builtin-baseline": "8f54ef5453e7e76ff01e15988bf243e7247c5eb5"
+}

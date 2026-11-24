@@ -1,0 +1,16 @@
+vcpkg_installed/
+NetworkServer/OZServer/server.conf
+x64/
+Debug/
+.vs/
+logs/
+*.user
+proto/csharp_out/
+.env
+NetworkServer/LoadTest/
+NetworkServer/ServerTest/
+NetworkServer/OZServer/OZServer.Test.sln
+NetworkServer/OZServer/generate_pdf.py
+C#/bin/
+C#/obj/
+__pycache__/

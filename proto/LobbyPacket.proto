@@ -1,0 +1,15 @@
+syntax = "proto3";
+package protobuf;
+
+import "Common.proto";
+
+// 로비 채널 이동(LOBBY_CHANNEL_MOVE). 로비 상태에서만 가능, 이미 있는 채널(1~채널 수)로만 이동
+message C_ChannelMove {
+	uint32 channel = 1;
+}
+
+message S_ChannelMove {
+	StatusCode status_code = 1;
+	uint32 channel = 2;				// 성공: 새 채널 / 실패: 현재 채널
+	uint32 channel_count = 3;		// 현재 채널 수(없는 채널 안내용)
+}

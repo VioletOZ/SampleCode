@@ -1,0 +1,253 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Db">
+      <UniqueIdentifier>{B45B2B17-2BC8-4ED7-A079-3B6E41A5FB02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{235BCDB0-AF74-4C6C-A5B2-A092F08EE20C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Redis">
+      <UniqueIdentifier>{3E37ABFE-0712-44E5-BAE2-DA831B8B1442}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="proto">
+      <UniqueIdentifier>{8277aac0-af8d-4968-864d-e05683fdc454}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lobby">
+      <UniqueIdentifier>{D16BBD99-92AD-4908-81C6-4B0B3DB50936}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Room">
+      <UniqueIdentifier>{2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Session">
+      <UniqueIdentifier>{1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="User">
+      <UniqueIdentifier>{554BB27F-D6DD-4E00-9107-33FA736FCFF4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{5F4F9D56-2379-4BAD-917E-B4BAFB1F6DAD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Message">
+      <UniqueIdentifier>{3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{495b3232-b457-4089-b859-68780c7868fe}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Db\DbWorker.cpp">
+      <Filter>Db</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\DbWriteKinds.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\UserTable.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Redis\UserCache.cpp">
+      <Filter>Redis</Filter>
+    </ClCompile>
+    <ClCompile Include="Redis\RedisWorker.cpp">
+      <Filter>Redis</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="proto\ChatPacket.pb.cc">
+      <Filter>proto</Filter>
+    </ClCompile>
+    <ClCompile Include="proto\Common.pb.cc">
+      <Filter>proto</Filter>
+    </ClCompile>
+    <ClCompile Include="proto\GamePacket.pb.cc">
+      <Filter>proto</Filter>
+    </ClCompile>
+    <ClCompile Include="proto\ItemPacket.pb.cc">
+      <Filter>proto</Filter>
+    </ClCompile>
+    <ClCompile Include="proto\LobbyPacket.pb.cc">
+      <Filter>proto</Filter>
+    </ClCompile>
+    <ClCompile Include="proto\RoomPacket.pb.cc">
+      <Filter>proto</Filter>
+    </ClCompile>
+    <ClCompile Include="proto\UserPacket.pb.cc">
+      <Filter>proto</Filter>
+    </ClCompile>
+    <ClCompile Include="Lobby\LobbyManager.cpp">
+      <Filter>Lobby</Filter>
+    </ClCompile>
+    <ClCompile Include="Room\Room.cpp">
+      <Filter>Room</Filter>
+    </ClCompile>
+    <ClCompile Include="Room\RoomManager.cpp">
+      <Filter>Room</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp" />
+    <ClCompile Include="Session\Session.cpp">
+      <Filter>Session</Filter>
+    </ClCompile>
+    <ClCompile Include="User\UserManager.cpp">
+      <Filter>User</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Common\Common.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Log.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ServerCommon.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\TickStats.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\TokenBucket.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\KeyedRateLimiter.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ServerConfig.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\WorkQueue.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Db\DbConfig.h">
+      <Filter>Db</Filter>
+    </ClInclude>
+    <ClInclude Include="Db\DbJob.h">
+      <Filter>Db</Filter>
+    </ClInclude>
+    <ClInclude Include="Db\DbJobQueue.h">
+      <Filter>Db</Filter>
+    </ClInclude>
+    <ClInclude Include="Db\DbResultQueue.h">
+      <Filter>Db</Filter>
+    </ClInclude>
+    <ClInclude Include="Db\DbWorker.h">
+      <Filter>Db</Filter>
+    </ClInclude>
+    <ClInclude Include="Db\DbWriteBuffer.h">
+      <Filter>Db</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ShutdownPolicy.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\DbWriteKinds.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\UserTable.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Redis\UserCache.h">
+      <Filter>Redis</Filter>
+    </ClInclude>
+    <ClInclude Include="Redis\RedisConfig.h">
+      <Filter>Redis</Filter>
+    </ClInclude>
+    <ClInclude Include="Redis\RedisJob.h">
+      <Filter>Redis</Filter>
+    </ClInclude>
+    <ClInclude Include="Redis\RedisJobQueue.h">
+      <Filter>Redis</Filter>
+    </ClInclude>
+    <ClInclude Include="Redis\RedisWorker.h">
+      <Filter>Redis</Filter>
+    </ClInclude>
+    <ClInclude Include="GameLoop.h" />
+    <ClInclude Include="Message\MessageQueue.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\ConnectionLimiter.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\PacketDispatcher.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\PacketHeader.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\PacketPolicy.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\PacketUtils.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\ResponseUtils.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="proto\ChatPacket.pb.h">
+      <Filter>proto</Filter>
+    </ClInclude>
+    <ClInclude Include="proto\Common.pb.h">
+      <Filter>proto</Filter>
+    </ClInclude>
+    <ClInclude Include="proto\GamePacket.pb.h">
+      <Filter>proto</Filter>
+    </ClInclude>
+    <ClInclude Include="proto\ItemPacket.pb.h">
+      <Filter>proto</Filter>
+    </ClInclude>
+    <ClInclude Include="proto\LobbyPacket.pb.h">
+      <Filter>proto</Filter>
+    </ClInclude>
+    <ClInclude Include="proto\RoomPacket.pb.h">
+      <Filter>proto</Filter>
+    </ClInclude>
+    <ClInclude Include="proto\UserPacket.pb.h">
+      <Filter>proto</Filter>
+    </ClInclude>
+    <ClInclude Include="Lobby\ChannelAllocator.h">
+      <Filter>Lobby</Filter>
+    </ClInclude>
+    <ClInclude Include="Lobby\LobbyManager.h">
+      <Filter>Lobby</Filter>
+    </ClInclude>
+    <ClInclude Include="Room\GameRules.h">
+      <Filter>Room</Filter>
+    </ClInclude>
+    <ClInclude Include="Room\Room.h">
+      <Filter>Room</Filter>
+    </ClInclude>
+    <ClInclude Include="Room\RoomGame.h">
+      <Filter>Room</Filter>
+    </ClInclude>
+    <ClInclude Include="Room\RoomManager.h">
+      <Filter>Room</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.h" />
+    <ClInclude Include="Session\Session.h">
+      <Filter>Session</Filter>
+    </ClInclude>
+    <ClInclude Include="Session\SessionManager.h">
+      <Filter>Session</Filter>
+    </ClInclude>
+    <ClInclude Include="Session\SessionState.h">
+      <Filter>Session</Filter>
+    </ClInclude>
+    <ClInclude Include="User\LoginQueue.h">
+      <Filter>User</Filter>
+    </ClInclude>
+    <ClInclude Include="User\UserManager.h">
+      <Filter>User</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h" />
+  </ItemGroup>
+</Project>
+

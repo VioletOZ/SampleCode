@@ -1,0 +1,79 @@
+syntax = "proto3";
+package protobuf;
+
+import "Common.proto";
+
+// 방 게임(코인 줍기). 흐름: 대기 -> (2명 이상 전원 준비) 카운트다운 -> 진행 -> 결과 -> 대기
+// 수치(정원, 맵 크기, 속도, 시간, 스냅샷 주기)는 서버 Room/GameRules.h
+enum GamePhase {
+	GAME_WAITING   = 0;
+	GAME_COUNTDOWN = 1;
+	GAME_PLAYING   = 2;
+	GAME_RESULT    = 3;
+}
+
+// 준비/준비 취소(GAME_READY). 방 안(대기·카운트다운)에서만. 카운트다운 중 취소하면 대기로 돌아감
+message C_GameReady {
+	bool ready = 1;
+}
+
+message S_GameReady {
+	StatusCode status_code = 1;
+	bool ready = 2;
+}
+
+message GameResult {
+	string name = 1;
+	uint32 score = 2;
+}
+
+// 서버 -> 방 인원 전체(GAME_STATE): 단계 전환, 인원/준비 수 변화 때
+message S_GameState {
+	StatusCode status_code = 1;
+	GamePhase phase = 2;
+	uint32 remaining_ms = 3;		// 카운트다운/진행/결과 단계의 남은 시간
+	uint32 player_count = 4;
+	uint32 ready_count = 5;
+	repeated GameResult results = 6;	// 결과 단계에서만: 점수 높은 순
+}
+
+// 이동(GAME_MOVE): 목표 위치. 진행 중(InGame)에서만. 서버가 속도·맵 범위를 검증
+message C_GameMove {
+	float x = 1;
+	float y = 2;
+	uint32 seq = 3;				// 클라이언트 이동 번호(스냅샷 last_seq로 반영 확인)
+}
+
+// 거부했을 때만 보냄(ERR_INVALID_MOVE): x, y = 서버가 가진 내 위치(보정)
+message S_GameMove {
+	StatusCode status_code = 1;
+	float x = 2;
+	float y = 3;
+	uint32 seq = 4;
+}
+
+message PlayerState {
+	uint32 player_id = 1;
+	string name = 2;				// 전체 스냅샷(full)에만
+	float x = 3;
+	float y = 4;
+	uint32 score = 5;
+	uint32 last_seq = 6;			// 마지막으로 받아들인 이동 번호
+}
+
+message Coin {
+	uint32 coin_id = 1;
+	float x = 2;
+	float y = 3;
+}
+
+// 서버 -> 방 인원 전체(GAME_SNAPSHOT): 진행 중 일정 틱마다, 바뀐 것만(델타). 시작 때 1회 전체(full)
+message S_GameSnapshot {
+	StatusCode status_code = 1;
+	uint32 snapshot_seq = 2;
+	bool full = 3;
+	repeated PlayerState players = 4;	// 움직였거나 점수가 바뀐 플레이어(full이면 전원)
+	repeated Coin coins = 5;			// 새로 생긴 코인(full이면 전부)
+	repeated uint32 removed_coins = 6;	// 주워져서 사라진 코인
+	repeated uint32 removed_players = 7;	// 게임 중 나간 플레이어
+}

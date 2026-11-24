@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OZServer — Portfolio</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+    font-size: 12.5px; color: #1e293b; background: #e2e8f0; line-height: 1.6;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .page {
+    width: 210mm; height: 297mm; margin: 8mm auto; padding: 15mm 16mm 12mm;
+    background: #fff; position: relative; overflow: hidden;
+  }
+  @media print {
+    body { background: #fff; }
+    .page { margin: 0; page-break-after: always; }
+    .page:last-child { page-break-after: auto; }
+  }
+
+  /* ── 커버 ── */
+  .cover { background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #134e2a 100%); color: #fff;
+           display: flex; flex-direction: column; justify-content: center; padding: 24mm 20mm; }
+  .cover-tag { font-size: 11px; letter-spacing: 3px; color: #22c55e; font-weight: 600; margin-bottom: 14px; }
+  .cover-title { font-size: 48px; font-weight: 700; line-height: 1.1; letter-spacing: -1px; }
+  .cover-sub { font-size: 18px; color: #94a3b8; margin: 8px 0 28px; }
+  .cover-divider { width: 60px; height: 3px; background: #22c55e; margin-bottom: 26px; }
+  .cover-lead { font-size: 13.5px; color: #cbd5e1; max-width: 150mm; line-height: 1.75; margin-bottom: 30px; }
+  .cover-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 30px; }
+  .kpi { background: rgba(255,255,255,0.06); border: 1px solid rgba(34,197,94,0.35); border-radius: 10px; padding: 12px 14px; }
+  .kpi b { display: block; font-size: 22px; color: #4ade80; font-weight: 700; line-height: 1.2; }
+  .kpi span { font-size: 10.5px; color: #cbd5e1; }
+  .cover-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; max-width: 150mm; margin-bottom: 26px; }
+  .cover-meta label { display: block; font-size: 9.5px; color: #64748b; letter-spacing: 1.5px; margin-bottom: 2px; }
+  .cover-meta span { font-size: 12.5px; color: #e2e8f0; font-weight: 500; }
+  .cover-stack { display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge { padding: 3px 11px; border-radius: 20px; font-size: 10.5px; font-weight: 500;
+           background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+
+  /* ── 섹션 ── */
+  .section-header { display: flex; align-items: center; gap: 10px; margin: 4px 0 12px; padding-bottom: 7px; border-bottom: 2px solid #f1f5f9; }
+  .section-num { font-size: 11px; font-weight: 700; color: #16a34a; letter-spacing: 1px; }
+  .section-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; }
+  .section-title { font-size: 18px; font-weight: 700; color: #0f172a; letter-spacing: -0.3px; }
+  h3 { font-size: 13.5px; color: #0f172a; margin: 12px 0 6px; }
+  .desc { font-size: 12px; color: #475569; margin-bottom: 8px; line-height: 1.7; }
+  .desc strong, li strong { color: #0f172a; font-weight: 700; }
+  ul.tight { margin: 0 0 8px 16px; font-size: 11.8px; color: #475569; }
+  ul.tight li { margin-bottom: 3px; }
+
+  /* ── 카드 ── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .info-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 11px 13px; font-size: 11.5px; color: #475569; }
+  .info-box > strong { display: block; color: #0f172a; font-size: 12.5px; margin-bottom: 5px; }
+  .info-box li { margin-left: 15px; margin-bottom: 2px; }
+  .stat { border-radius: 8px; padding: 10px 12px; background: #f0fdf4; border: 1px solid #bbf7d0; }
+  .stat b { display: block; font-size: 19px; color: #15803d; line-height: 1.25; }
+  .stat span { font-size: 10.5px; color: #475569; }
+
+  /* ── 코드 ── */
+  .code-card { margin: 8px 0 8px; border-radius: 9px; overflow: hidden; border: 1px solid #e2e8f0; break-inside: avoid; }
+  .code-card-header { background: #16a34a; padding: 6px 13px; display: flex; justify-content: space-between; align-items: center; }
+  .code-card-title { font-size: 11.5px; font-weight: 700; color: #fff; }
+  .code-card-file { font-size: 9.5px; color: rgba(255,255,255,0.85); font-family: Consolas, monospace; }
+  .code-card-body { background: #0f172a; padding: 9px 13px; }
+  pre { font-family: Consolas, 'D2Coding', 'Malgun Gothic', monospace; font-size: 9.6px; color: #e2e8f0; line-height: 1.55; white-space: pre; }
+  .kw { color: #93c5fd; } .ty { color: #86efac; } .cm { color: #7c8aa0; font-style: italic; }
+  .st { color: #fca5a5; } .num { color: #c4b5fd; }
+  .point { background: #f8fafc; border-left: 3px solid #22c55e; padding: 7px 12px; font-size: 11.3px; color: #475569; line-height: 1.6; margin-bottom: 6px; }
+  .point strong { color: #0f172a; }
+
+  /* ── 표 ── */
+  table { width: 100%; border-collapse: collapse; font-size: 11px; margin: 6px 0 10px; }
+  th { background: #0f172a; color: #fff; padding: 6px 9px; text-align: left; font-weight: 600; font-size: 10.5px; }
+  td { padding: 5px 9px; border-bottom: 1px solid #eef2f7; vertical-align: top; color: #334155; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  td.good { color: #15803d; font-weight: 700; }
+  td.bad { color: #b91c1c; }
+  .tag { display: inline-block; padding: 1px 7px; border-radius: 4px; font-size: 9.5px; font-weight: 700; }
+  .tag-perf { background: #fef3c7; color: #92400e; } .tag-bug { background: #fee2e2; color: #b91c1c; }
+  .tag-arch { background: #dcfce7; color: #166534; } .tag-safe { background: #dbeafe; color: #1e3a8a; }
+
+  .footer { position: absolute; left: 16mm; right: 16mm; bottom: 8mm; padding-top: 6px; border-top: 1px solid #f1f5f9;
+            font-size: 9.5px; color: #94a3b8; display: flex; justify-content: space-between; }
+  svg text { font-family: 'Malgun Gothic', sans-serif; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ COVER ══════════════════ -->
+<div class="page cover">
+  <div class="cover-tag">PORTFOLIO · GAME SERVER</div>
+  <div class="cover-title">OZServer</div>
+  <div class="cover-sub">C++20 Multithreaded TCP Game Room Server</div>
+  <div class="cover-divider"></div>
+  <p class="cover-lead">
+    로그인 → 로비 채널 → 방 생성·참가 → 채팅 → <b style="color:#fff">방 게임(서버 권한 이동 · 10Hz 델타 동기화)</b>까지의 게임 서버 뼈대를 직접 설계했습니다.
+    <b style="color:#fff">I/O 스레드 풀과 단일 GameLoop 스레드를 큐로 분리</b>해 게임 상태에 락을 두지 않았고,
+    MySQL 워커 풀·Redis 캐시·지연 쓰기 큐로 DB 부하를 덜었습니다.
+    모든 개선은 부하 테스트 봇으로 <b style="color:#fff">전후 수치를 측정해 검증</b>했습니다.
+  </p>
+  <div class="cover-kpis">
+    <div class="kpi"><b>6,000명</b><span>동시 접속 방 채팅, 실패 0</span></div>
+    <div class="kpi"><b>p99 114ms</b><span>채팅 왕복 (초당 5.9만 건 수신)</span></div>
+    <div class="kpi"><b>400 사이클/초</b><span>접속~로그아웃 반복, 누수 0</span></div>
+    <div class="kpi"><b>p99 144ms</b><span>6,000명 방 게임 이동→반영 (10Hz)</span></div>
+    <div class="kpi"><b>2.6만 → 24.7만</b><span>서버 전달량 (패킷/초)</span></div>
+    <div class="kpi"><b>109개</b><span>Google Test 단위 테스트</span></div>
+  </div>
+  <div class="cover-meta">
+    <div><label>분류</label><span>게임 서버 / 네트워크 서버</span></div>
+    <div><label>언어 · 환경</label><span>C++20 · C# · Python · PHP</span></div>
+    <div><label>규모</label><span>서버·테스트·부하 도구 약 6,000줄</span></div>
+    <div><label>저장소</label><span>github.com/VioletOZ/SampleCode</span></div>
+  </div>
+  <div class="cover-stack">
+    <span class="badge">Boost.Asio</span><span class="badge">Protobuf</span><span class="badge">MySQL X DevAPI</span>
+    <span class="badge">Redis</span><span class="badge">MPSC Queue</span><span class="badge">Strand</span>
+    <span class="badge">20 TPS GameLoop</span><span class="badge">Delta Snapshot</span><span class="badge">Token Bucket</span><span class="badge">Google Test</span><span class="badge">Load Test</span>
+  </div>
+</div>
+
+<!-- ══════════════════ 01 개요 ══════════════════ -->
+<div class="page">
+  <div class="section-header"><span class="section-num">01</span><div class="section-dot"></div><span class="section-title">프로젝트 개요</span></div>
+  <p class="desc">
+    OZServer는 다수의 클라이언트가 동시에 접속해 로비에서 방을 만들고 채팅하는 <strong>TCP 게임 룸 서버</strong>입니다.
+    목표는 기능 수가 아니라 <strong>"많은 동시 접속에서도 안전하고 빠르게 동작하는 서버 구조"</strong>를 만들고 숫자로 증명하는 것이었습니다.
+    그래서 컨텐츠(아이템, 전투)는 의도적으로 넣지 않고 공통 기반에 집중했으며, 룸 서버의 핵심 흐름을 보여 주는 최소 방 게임만 넣었습니다.
+  </p>
+
+  <div class="grid2" style="margin-top:8px">
+    <div class="info-box">
+      <strong>구현 기능</strong>
+      <ul>
+        <li>로그인(ID만, 없으면 자동 생성) · 로그아웃 · 중복 접속 거부</li>
+        <li>로그인 대기열(동시 처리 상한 + 순번 알림)</li>
+        <li>로비 채널(정원 100) · 채널 이동 · 채널 채팅</li>
+        <li>방 생성 / 참가 / 퇴장 / 목록(페이지) / 인원 목록 / 방 채팅</li>
+        <li>방 게임: 준비 → 카운트다운 → 진행 → 결과, 서버 권한 이동 검증, 10Hz 델타 스냅샷</li>
+        <li>접속자 요약, 연결 유지(하트비트), 단계적 종료</li>
+      </ul>
+    </div>
+    <div class="info-box">
+      <strong>기술 스택</strong>
+      <ul>
+        <li>C++20, MSVC v143, Visual Studio 2022 (x64)</li>
+        <li>Boost.Asio 1.86 — 비동기 I/O, strand</li>
+        <li>Google Protobuf 5.29 — 패킷 직렬화</li>
+        <li>MySQL 8.0 (X DevAPI) · Redis (redis-plus-plus)</li>
+        <li>vcpkg manifest · Google Test · 자체 부하 테스트 봇</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>구성</h3>
+  <table>
+    <tr><th style="width:24%">프로젝트</th><th>역할</th></tr>
+    <tr><td><b>OZServer</b></td><td>서버 본체. Network / Session / Message / User / Lobby / Room / Db / Data / Redis / Common 폴더로 계층 분리</td></tr>
+    <tr><td><b>ServerTest</b><br>(저장소 미포함)</td><td>Google Test 109개 — 패킷 프레이밍, 디스패처(허용 상태·빈도 제한), 레이트리밋, 대기열, 채널 배정, 방 게임 규칙, 설정, 로거, 지연 쓰기, 종료 정책, 큐 동시성</td></tr>
+    <tr><td><b>LoadTest</b><br>(저장소 미포함)</td><td>부하 테스트 봇(최대 6,000). 시나리오 login / room / lobby / churn / idle / game, 로그인 지연·채팅 왕복·이동 반영 p50/p95/p99 측정</td></tr>
+    <tr><td><b>Client</b></td><td>콘솔 테스트 클라이언트(모든 패킷을 명령어로 확인)</td></tr>
+    <tr><td><b>C#</b> · <b>Python</b> · <b>PHP</b></td><td>웹소켓 채팅 서버(C#, ASP.NET Core) · 게임 서버 컨텐츠 로직과 운영 도구 코드 샘플(09~10장)</td></tr>
+    <tr><td><b>proto</b> · <b>db</b></td><td>.proto 정의와 생성 스크립트 · MySQL 스키마(<code>schema.sql</code>) · MySQL/Redis <code>docker-compose.yml</code></td></tr>
+  </table>
+
+  <h3>개발 방식 — 측정하고, 고치고, 다시 측정</h3>
+  <div class="grid3">
+    <div class="stat"><b>① 기준선</b><span>부하 봇으로 처음 측정: 2,000명에서 한계, 대량 종료 시 크래시 발견</span></div>
+    <div class="stat"><b>② 병목 분석</b><span>송신 경로·로그인 DB·로비 N²·콘솔 출력 등 원인을 수치로 특정</span></div>
+    <div class="stat"><b>③ 개선 · 재측정</b><span>단계마다 같은 시나리오로 전후 비교, 결과를 문서로 기록</span></div>
+  </div>
+  <p class="desc" style="margin-top:10px">
+    작업마다 <strong>설계 문서 → 구현 → 단위 테스트 → 부하 테스트 → 결과 기록</strong> 순서로 진행했고,
+    결정의 근거(예: 대기열 상한 64를 16·32·64로 비교해 선택)를 문서에 남겼습니다.
+    발견한 결함은 이슈 문서에 기록하고, 해결하면 측정으로 재발 여부를 확인했습니다.
+  </p>
+
+  <h3>의도적으로 범위에서 뺀 것</h3>
+  <ul class="tight">
+    <li><strong>게임 컨텐츠</strong>(아이템·전투): 새 패킷은 <code>.proto</code> 추가 → 핸들러 작성 → 등록 한 줄(허용 상태·빈도 제한 포함)로 붙일 수 있게 구조만 준비</li>
+    <li><strong>인증 · TLS</strong>: ID만으로 로그인. TLS는 로드밸런서에서 종료하는 방향으로 설계 문서에 정리</li>
+    <li><strong>재접속 복귀</strong>: 끊기면 방에서 바로 퇴장(단순하고 예측 가능한 정책 선택)</li>
+  </ul>
+  <div class="footer"><span>OZServer — Portfolio</span><span>01 프로젝트 개요</span></div>
+</div>
+
+<!-- ══════════════════ 02 아키텍처 ══════════════════ -->
+<div class="page">
+  <div class="section-header"><span class="section-num">02</span><div class="section-dot"></div><span class="section-title">아키텍처 — 스레드 모델</span></div>
+  <p class="desc">
+    핵심 원칙은 <strong>"게임 상태는 한 스레드만 만진다"</strong>입니다. 소켓 처리는 I/O 스레드 풀이 나눠 맡고,
+    방·유저·세션 상태는 GameLoop 스레드 하나에서만 바꿉니다. 두 쪽은 큐로만 만나기 때문에 게임 로직 어디에도 락이 없고,
+    DB·Redis 결과도 같은 방식으로 GameLoop에 돌아옵니다.
+  </p>
+
+  <svg viewBox="0 0 1260 690" width="100%" style="margin:2px 0 6px">
+<defs><marker id="k" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker><marker id="g" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker></defs>
+<rect width="1260" height="690" fill="#ffffff"/>
+<text x="34" y="44" font-size="22" font-weight="700" fill="#0f172a" text-anchor="start">OZServer 구성도</text>
+<path d="M900,38 H942" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)"/>
+<text x="952" y="43" font-size="13" font-weight="400" fill="#475569" text-anchor="start">요청 · 작업</text>
+<path d="M1060,38 H1102" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#g)"/>
+<text x="1112" y="43" font-size="13" font-weight="400" fill="#475569" text-anchor="start">송신 · 결과</text>
+<rect x="34" y="150" width="150" height="150" rx="14" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6"/>
+<text x="109" y="200" font-size="18" font-weight="700" fill="#334155" text-anchor="middle">Clients</text>
+<text x="109" y="228" font-size="13" font-weight="400" fill="#475569" text-anchor="middle">헤더 6B + protobuf</text>
+<text x="109" y="252" font-size="13" font-weight="400" fill="#475569" text-anchor="middle">30초 하트비트</text>
+<rect x="250" y="80" width="270" height="290" rx="14" fill="#fff7ed" stroke="#fb923c" stroke-width="1.6"/>
+<text x="385" y="112" font-size="17" font-weight="700" fill="#9a3412" text-anchor="middle">I/O 스레드 풀 (기본 4)</text>
+<text x="385" y="134" font-size="13" font-weight="400" fill="#c2410c" text-anchor="middle">Boost.Asio</text>
+<rect x="270" y="152" width="230" height="200" rx="10" fill="#ffffff" stroke="#fdba74" stroke-width="1.6"/>
+<text x="385" y="180" font-size="15" font-weight="700" fill="#334155" text-anchor="middle">Session · 세션별 strand</text>
+<text x="290" y="210" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  헤더 → 바디 2단계 수신</text>
+<text x="290" y="237" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  패킷 빈도 제한 (초당 20)</text>
+<text x="290" y="264" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  무응답 · 미로그인 타임아웃</text>
+<text x="290" y="291" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  묶음 송신 (최대 64개)</text>
+<text x="290" y="318" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  미전송 1MB 초과 시 종료</text>
+<path d="M194,225 H260" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)" marker-start="url(#k)"/>
+<rect x="580" y="130" width="130" height="84" rx="14" fill="#fefce8" stroke="#eab308" stroke-width="1.6"/>
+<text x="645" y="164" font-size="15" font-weight="700" fill="#854d0e" text-anchor="middle">MessageQueue</text>
+<text x="645" y="188" font-size="13" font-weight="400" fill="#a16207" text-anchor="middle">MPSC · swap</text>
+<path d="M520,172 H572" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)"/>
+<text x="548" y="160" font-size="12.5" font-weight="600" fill="#475569" text-anchor="middle">Push</text>
+<path d="M710,172 H762" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)"/>
+<text x="736" y="160" font-size="12.5" font-weight="600" fill="#475569" text-anchor="middle">PopAll</text>
+<rect x="770" y="80" width="460" height="290" rx="14" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="1.6"/>
+<text x="1000" y="112" font-size="17" font-weight="700" fill="#5b21b6" text-anchor="middle">GameLoop 스레드 (1)</text>
+<text x="1000" y="134" font-size="13" font-weight="400" fill="#6d28d9" text-anchor="middle">20 TPS · 게임 상태 전담 · 락 없음</text>
+<rect x="790" y="152" width="188" height="200" rx="10" fill="#ffffff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="884" y="180" font-size="15" font-weight="700" fill="#334155" text-anchor="middle">패킷 처리 순서</text>
+<text x="808" y="210" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">1.  미등록 타입 확인</text>
+<text x="808" y="237" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">2.  종료 중이면 거부</text>
+<text x="808" y="264" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">3.  허용 상태 (기본 거부)</text>
+<text x="808" y="291" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">4.  요청 빈도 제한</text>
+<text x="808" y="318" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">5.  핸들러 호출</text>
+<rect x="1014" y="152" width="196" height="200" rx="10" fill="#ffffff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="1110" y="180" font-size="15" font-weight="700" fill="#334155" text-anchor="middle">Manager</text>
+<text x="1026" y="210" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  User   로그인 · 대기열</text>
+<text x="1026" y="237" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  Lobby  채널 (정원 100)</text>
+<text x="1026" y="264" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  Room   방 · 채팅</text>
+<text x="1026" y="291" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  RoomGame  이동 검증</text>
+<text x="1026" y="318" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  10Hz 델타 스냅샷</text>
+<path d="M978,252 H1006" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)"/>
+<path d="M770,310 H528" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#g)"/>
+<rect x="557" y="288" width="181" height="20" rx="5" fill="#ffffff"/>
+<text x="648" y="302" font-size="12.5" font-weight="600" fill="#15803d" text-anchor="middle">SendPacket / Broadcast</text>
+<rect x="440" y="425" width="250" height="40" rx="20" fill="#eff6ff" stroke="#60a5fa" stroke-width="1.6"/>
+<text x="565" y="450" font-size="14.5" font-weight="700" fill="#1e40af" text-anchor="middle">DbJobQueue</text>
+<rect x="770" y="425" width="230" height="40" rx="20" fill="#fef2f2" stroke="#f87171" stroke-width="1.6"/>
+<text x="885" y="450" font-size="14.5" font-weight="700" fill="#991b1b" text-anchor="middle">RedisJobQueue</text>
+<rect x="1085" y="425" width="145" height="40" rx="20" fill="#f0fdf4" stroke="#4ade80" stroke-width="1.6"/>
+<text x="1157" y="450" font-size="14.5" font-weight="700" fill="#166534" text-anchor="middle">DbResultQueue</text>
+<path d="M810,370 V396 H565 V417" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)"/>
+<path d="M885,370 V417" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)"/>
+<path d="M1157,425 V378" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#g)"/>
+<text x="1145" y="405" font-size="12.5" font-weight="600" fill="#15803d" text-anchor="end">다음 틱 콜백</text>
+<rect x="440" y="500" width="250" height="120" rx="14" fill="#eff6ff" stroke="#60a5fa" stroke-width="1.6"/>
+<text x="565" y="530" font-size="15" font-weight="700" fill="#1e40af" text-anchor="middle">DB 워커 풀 (8) + 지연 쓰기 (1)</text>
+<text x="462" y="558" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  워커마다 커넥션 1개</text>
+<text x="462" y="581" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  UserTable (모델 + 쿼리)</text>
+<text x="462" y="604" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  login_date 묶음 갱신</text>
+<rect x="770" y="500" width="230" height="120" rx="14" fill="#fef2f2" stroke="#f87171" stroke-width="1.6"/>
+<text x="885" y="530" font-size="15" font-weight="700" fill="#991b1b" text-anchor="middle">Redis 워커 (1)</text>
+<text x="792" y="558" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  유저 캐시 (TTL 1일)</text>
+<text x="792" y="581" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  장애 시 DB로 계속</text>
+<text x="792" y="604" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  미적중 → DB 조회</text>
+<path d="M565,465 V492" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)"/>
+<path d="M885,465 V492" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)"/>
+<path d="M262,522 a60.0,12 0 0 1 120,0 v76 a60.0,12 0 0 1 -120,0 z" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.6"/>
+<path d="M262,522 a60.0,12 0 0 0 120,0" fill="none" stroke="#1d4ed8" stroke-width="1.6"/>
+<text x="322.0" y="570.0" font-size="15" font-weight="700" fill="#1d4ed8" text-anchor="middle">MySQL</text>
+<text x="322.0" y="589.0" font-size="11.5" font-weight="400" fill="#64748b" text-anchor="middle">원본 데이터</text>
+<path d="M430,560 H392" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)" marker-start="url(#k)"/>
+<path d="M1045,522 a42.0,12 0 0 1 84,0 v76 a42.0,12 0 0 1 -84,0 z" fill="#fee2e2" stroke="#b91c1c" stroke-width="1.6"/>
+<path d="M1045,522 a42.0,12 0 0 0 84,0" fill="none" stroke="#b91c1c" stroke-width="1.6"/>
+<text x="1087.0" y="570.0" font-size="15" font-weight="700" fill="#b91c1c" text-anchor="middle">Redis</text>
+<text x="1087.0" y="589.0" font-size="11.5" font-weight="400" fill="#64748b" text-anchor="middle">캐시</text>
+<path d="M1008,560 H1036" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)" marker-start="url(#k)"/>
+<path d="M565,620 V652 H1157 V473" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#g)"/>
+<path d="M885,620 V652" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-dasharray="7 5"/>
+<rect x="710" y="643" width="29" height="20" rx="5" fill="#ffffff"/>
+<text x="725" y="657" font-size="12.5" font-weight="600" fill="#15803d" text-anchor="middle">결과</text>
+</svg>
+
+  <table>
+    <tr><th style="width:22%">규칙</th><th>내용과 이유</th></tr>
+    <tr><td><b>상태는 한 스레드</b></td><td>방·유저·세션 상태는 GameLoop에서만 읽고 쓴다 → 락·데드락이 없고, 핸들러는 단일 스레드 코드처럼 단순하게 작성</td></tr>
+    <tr><td><b>소켓은 strand</b></td><td>세션별 strand로 읽기·쓰기·종료를 직렬화. 다른 스레드는 <code>post</code>로만 요청. 비동기 완료 핸들러는 <code>shared_from_this()</code>로 수명 보장</td></tr>
+    <tr><td><b>DB는 큐로</b></td><td>GameLoop는 직접 쿼리하지 않음. 작업 큐 → 워커 → 결과 큐 → 다음 틱 콜백. 같은 대상의 동시 DB 작업은 요청 측(<code>_pending_logins</code>)에서 차단</td></tr>
+    <tr><td><b>종료 순서</b></td><td>신호 → 접속 차단·요청 거부 → 진행 중 작업 마무리 → 세션 종료 → GameLoop 정지(지연 쓰기 비움) → 워커 정지. 멈춘 큐에 넣는 경로가 없도록 순서 고정</td></tr>
+  </table>
+  <div class="footer"><span>OZServer — Portfolio</span><span>02 아키텍처</span></div>
+</div>
+
+<!-- ══════════════════ 03 핵심 설계 1 ══════════════════ -->
+<div class="page">
+  <div class="section-header"><span class="section-num">03</span><div class="section-dot"></div><span class="section-title">핵심 설계와 코드 ①  스레드 경계 · 패킷 처리</span></div>
+
+  <div class="code-card">
+    <div class="code-card-header"><span class="code-card-title">MessageQueue — 락을 짧게 잡는 MPSC 큐</span><span class="code-card-file">Message/MessageQueue.h</span></div>
+    <div class="code-card-body"><pre class="hl">void Push(const SessionPtr&amp; session, RawPacket&amp;&amp; packet) {
+    std::lock_guard&lt;std::mutex&gt; lock(_mutex);
+    _queue.push({ session, std::move(packet) });          // 패킷은 move, 복사 없음
+}
+// 연결 종료도 같은 큐로 → 정리는 항상 GameLoop 스레드에서
+void PushDisconnect(const SessionPtr&amp; session) { /* lock 후 push(IncomingMessage(session)) */ }
+
+std::queue&lt;IncomingMessage&gt; PopAll() {                  // GameLoop가 틱마다 1회
+    std::queue&lt;IncomingMessage&gt; tmp;
+    std::lock_guard&lt;std::mutex&gt; lock(_mutex);
+    std::swap(tmp, _queue);                               // O(1) 교환, 처리는 락 밖에서
+    return tmp;
+}</pre></div>
+  </div>
+  <div class="point">I/O 스레드 여러 개가 넣고 GameLoop 하나가 꺼내는 구조라, 소비자는 <strong>swap으로 통째로 가져가 락 보유 시간을 포인터 교환 수준</strong>으로 줄였습니다. 연결 종료도 이벤트로 넣어, 방 퇴장·세션 정리가 다른 스레드와 경쟁하지 않습니다.</div>
+
+  <div class="code-card">
+    <div class="code-card-header"><span class="code-card-title">PacketDispatcher — 패킷 1종 = 등록 1줄 (허용 상태 · 빈도 제한 · 거부 응답까지)</span><span class="code-card-file">Network/PacketDispatcher.h · GameLoop.h</span></div>
+    <div class="code-card-body"><pre class="hl">template&lt;typename ProtoMsg, typename Response&gt;
+void Register(protobuf::PacketType type, AllowedStates allowed,
+              std::function&lt;void(SessionPtr, const ProtoMsg&amp;)&gt; handler, RequestLimit limit = RequestLimit::None) {
+    _handlers[type] = {
+        [] { return std::make_unique&lt;ProtoMsg&gt;(); },                       // 파싱용 빈 메시지
+        [handler](SessionPtr s, const google::protobuf::Message&amp; m) { handler(s, static_cast&lt;const ProtoMsg&amp;&gt;(m)); },
+        &amp;PacketUtils::SerializeStatus&lt;Response&gt;,                             // 거부 응답 생성기
+        allowed, limit };                                                  // 받는 상태(비트마스크) · 빈도 제한 종류
+}
+// GameLoop::RegisterHandlers — 상태를 가진 Manager로 바로 연결
+_dispatcher.Register&lt;C_RoomList, S_RoomList&gt;(ROOM_LIST, { Lobby },
+    [this](SessionPtr s, const C_RoomList&amp; p) { _room_manager.HandleRoomList(s, p); }, RequestLimit::List);
+
+// GameLoop::ProcessMessage — 처리 순서 (핸들러에는 검사 코드가 없음)
+if (!_dispatcher.IsRegistered(type))              → S_ProtocolError (3회 누적 시 연결 종료)
+if (_shutting_down)                               → SerializeStatus(type, ERR_SERVER_SHUTTING_DOWN)
+if (!_dispatcher.IsAllowed(session-&gt;GetState(), type)) → SerializeStatus(type, ERR_INVALID_STATE)
+if (!session-&gt;TryTakeRequestToken(limit, now))    → SerializeStatus(type, ERR_RATE_LIMITED)
+_dispatcher.Dispatch(session, type, body);        // 파싱 실패도 프로토콜 오류</pre></div>
+  </div>
+  <div class="point">요청·응답 타입, 받는 세션 상태, 빈도 제한을 <strong>한 줄에 함께 등록</strong>해, 상태 위반·종료 중·빈도 초과 거부 응답을 핸들러마다 만들지 않고 공통 코드가 생성합니다. 허용 상태는 <strong>기본 거부</strong>(등록하지 않은 타입·상태는 모두 거부)라 새 패킷을 추가할 때 실수해도 열리지 않고, 핸들러는 비즈니스 로직만 담습니다. 모든 응답은 공용 <code>StatusCode</code>로 결과를 돌려주고 조용히 버리는 요청이 없습니다.</div>
+
+  <div class="grid2">
+    <div class="info-box"><strong>세션 FSM</strong>
+      Unauthenticated → (로그인 요청) LoggingIn → Lobby ⇄ InRoom<br>
+      로그인 결과가 올 때까지 모든 요청 거부, 실패·로그아웃 시 Unauthenticated
+    </div>
+    <div class="info-box"><strong>예외 격리</strong>
+      메시지 1개·DB 콜백 1개 단위로 예외를 잡아 로그 후 계속(<code>RunGuarded</code>). DB 작업은 실패 결과를 요청 측에 돌려줘 세션이 멈추지 않음
+    </div>
+  </div>
+  <div class="footer"><span>OZServer — Portfolio</span><span>03 핵심 설계 ①</span></div>
+</div>
+
+<!-- ══════════════════ 04 핵심 설계 2 ══════════════════ -->
+<div class="page">
+  <div class="section-header"><span class="section-num">04</span><div class="section-dot"></div><span class="section-title">핵심 설계와 코드 ②  송신 · 로그인 파이프라인</span></div>
+
+  <div class="code-card">
+    <div class="code-card-header"><span class="code-card-title">묶음 송신 — 평소엔 즉시 1개, 밀릴 때만 최대 64개를 한 번에</span><span class="code-card-file">Session/Session.h</span></div>
+    <div class="code-card-body"><pre class="hl">void Write() {                                          // 세션 strand에서만 실행
+    const size_t count = std::min(_write_queue.size(), MAX_WRITE_BATCH);   // 64
+    for (size_t i = 0; i &lt; count; ++i) {
+        _write_buffers.push_back(boost::asio::buffer(*_write_queue.front()));
+        _in_flight.push_back(std::move(_write_queue.front()));          // 전송 끝까지 버퍼 유지
+        _write_queue.pop_front();
+    }
+    boost::asio::async_write(_socket, _write_buffers,               // scatter-gather, 복사 없음
+        boost::asio::bind_executor(_strand,
+            [self = shared_from_this()](const boost::system::error_code&amp; error, size_t bytes) {
+                if (error) { self-&gt;HandleDisconnect(); return; }
+                self-&gt;_pending_bytes -= bytes;
+                self-&gt;_in_flight.clear();                           // 용량 유지 → 재할당 없음
+                self-&gt;_write_buffers.clear();
+                if (!self-&gt;_write_queue.empty()) self-&gt;Write();
+            }));
+}</pre></div>
+  </div>
+  <div class="point">처음 구조는 패킷마다 <code>async_write</code>를 1번씩 걸어 room 4,000명에서 채팅 왕복 p99가 <strong>9.3초</strong>까지 늘었습니다. 타이머로 모으지 않고 <strong>"전송 중에 쌓인 것만 묶는"</strong> 방식으로 바꿔 저부하 지연은 그대로 두고, 같은 조건 p99를 <strong>71ms</strong>로 줄였습니다. 방 브로드캐스트는 직렬화한 버퍼 1개를 <code>shared_ptr</code>로 모든 수신자가 공유하고, 미전송 1MB를 넘는 느린 클라이언트는 끊어 서버 메모리를 보호합니다.</div>
+
+  <div class="code-card">
+    <div class="code-card-header"><span class="code-card-title">로그인 — 캐시 우선, DB는 상한과 대기열로 보호</span><span class="code-card-file">User/UserManager.cpp</span></div>
+    <div class="code-card-body"><pre class="hl">void UserManager::OnCacheResult(SessionPtr session, std::string uuid, std::optional&lt;UserRow&gt; cached) {
+    if (session-&gt;IsDisconnected()) { _pending_logins.erase(uuid); return; }
+    if (cached) {                                               // Redis 적중 → DB 없이 완료
+        _pending_logins.erase(uuid);
+        _write_buffer.Put(WriteKind::LoginDate, cached-&gt;id);    // login_date는 지연 쓰기로
+        CompleteLogin(session, uuid, cached-&gt;id, std::move(cached-&gt;nickname), "cache");
+        return;
+    }
+    if (_shutdown_code != protobuf::OK) { /* 종료 중: 새 DB 작업 만들지 않고 거부 */ }
+    if (_inflight &lt; _max_inflight &amp;&amp; _waiting.Empty()) {    // 여유 있으면 바로 DB
+        StartLogin(std::move(session), std::move(uuid));
+        return;
+    }
+    if (!_waiting.TryPush({ session, uuid })) { /* 대기열 10,000 초과 → ERR_SERVER_BUSY */ }
+    SendQueuePosition(session, waiting, waiting);              // 1초마다 순번 알림
+}</pre></div>
+  </div>
+  <div class="point">로그인은 <strong>Redis 조회 → 미적중이면 DB</strong>(cache-aside)입니다. DB로 동시에 넘기는 로그인은 워커 수 × 8개로 제한하고 나머지는 FIFO 대기열에서 순번을 알려 줍니다(16·32·64를 측정해 64 채택). Redis가 멈춰도 1초 동안은 바로 미적중 처리해 <strong>로그인은 DB로 계속</strong>됩니다. 같은 ID의 동시 요청은 처리 중 목록으로 막아 DB 워커가 여러 개여도 같은 계정 작업이 겹치지 않습니다. SQL과 행 매핑은 DAO(<code>Data/UserTable</code>)에만 두어 <strong>게임 로직에는 SQL이 없습니다.</strong></div>
+  <div class="footer"><span>OZServer — Portfolio</span><span>04 핵심 설계 ②</span></div>
+</div>
+
+<!-- ══════════════════ 05 핵심 설계 3 ══════════════════ -->
+<div class="page">
+  <div class="section-header"><span class="section-num">05</span><div class="section-dot"></div><span class="section-title">핵심 설계와 코드 ③  DB 부하 · 종료 · 방어</span></div>
+
+  <div class="code-card">
+    <div class="code-card-header"><span class="code-card-title">지연 쓰기 큐 — 잦은 쓰기를 모아 묶음 1건으로</span><span class="code-card-file">Db/DbWriteBuffer.h · Data/DbWriteKinds.cpp</span></div>
+    <div class="code-card-body"><pre class="hl">void Put(WriteKind kind, int64_t key, int64_t value = 0) {     // GameLoop 전용, 락 없음
+    Buffer&amp; buffer = _buffers[static_cast&lt;size_t&gt;(kind)];
+    if (buffer.entries.empty()) buffer.deadline = Clock::now() + _specs[kind].interval;   // 1초
+    buffer.entries.insert_or_assign(key, value);                  // 같은 키는 마지막 값만
+    if (buffer.entries.size() &gt;= _specs[kind].max_items) Flush(kind);                    // 1,000개
+}
+void Flush(WriteKind kind) {                                      // 버퍼를 move해서 작업 1건으로
+    _queue.Push({ [write = spec.write, entries = std::exchange(buffer.entries, {})](mysqlx::Session&amp; s) {
+        try { write(s, entries); }                                // UPDATE user SET login_date=NOW() WHERE id IN (...)
+        catch (const std::exception&amp; e) { LogError(...); }
+    } });
+}
+// 종류 추가 = WriteKind 값 + 표에 한 줄: { "login_date", 1s, 1000, 쓰기 함수(UserTable) }</pre></div>
+  </div>
+  <div class="point">로그인마다 나가던 <code>UPDATE</code> 6,000건이 <strong>6건</strong>이 됐습니다. 묶음은 전용 워커 1개가 넣은 순서대로 실행해 예전 값이 새 값을 덮어쓰지 않고, 정상 종료 시 모두 비웁니다. 비정상 종료 시 최대 1초분이 유실될 수 있어 <strong>재화·아이템처럼 유실되면 안 되는 데이터는 넣지 않는다</strong>는 규칙과 즉시 쓰기(<code>WriteNow</code>)를 함께 두었습니다.</div>
+
+  <div class="grid2">
+    <div>
+      <div class="code-card" style="margin-top:4px">
+        <div class="code-card-header"><span class="code-card-title">단계적 종료</span><span class="code-card-file">ShutdownPolicy.h · GameLoop.h</span></div>
+        <div class="code-card-body"><pre class="hl">bool ShouldFinishShutdown(duration elapsed,
+                          bool has_pending_work) {
+    if (elapsed &gt;= SHUTDOWN_MAX_WAIT) return true; // 60s
+    return elapsed &gt;= SHUTDOWN_GRACE               // 10s
+        &amp;&amp; !has_pending_work;
+}
+void UpdateShutdown() {          // 종료 중 매 틱
+    _db_write_buffer.FlushAll();
+    if (ShouldFinishShutdown(elapsed,
+            _user_manager.HasPendingLogins()))
+        _on_shutdown_ready();    // 세션 종료 시작
+}</pre></div>
+      </div>
+    </div>
+    <div class="info-box" style="margin-top:4px">
+      <strong>Ctrl+C 한 번 → 유실 없는 종료</strong>
+      <ul>
+        <li>새 접속 차단, 모든 요청에 <code>ERR_SERVER_SHUTTING_DOWN</code></li>
+        <li>로그인 대기열은 즉시 거부, 이미 DB에 넘긴 로그인은 끝까지 처리</li>
+        <li>지연 쓰기는 매 틱 비움</li>
+        <li>10초 경과 + 남은 작업 없음 → 세션 종료 → 워커 정지</li>
+        <li>두 번째 Ctrl+C는 즉시 종료</li>
+      </ul>
+      <div style="margin-top:6px">검증: 6,000명 로그인 중 종료 → 진행 중 272건 완료, 1,392건 거부, <b>성공 4,608 = DB 반영 4,608 = 캐시 4,608</b></div>
+    </div>
+  </div>
+
+  <h3>남용 방어 — 토큰 버킷 계층</h3>
+  <table>
+    <tr><th style="width:25%">대상</th><th style="width:25%">한도</th><th>처리 위치 · 초과 시</th></tr>
+    <tr><td>세션 패킷</td><td>초당 20 (버스트 40)</td><td>I/O 스레드에서 큐에 넣기 전에 버림 → 10초에 100개 넘게 버리면 연결 종료</td></tr>
+    <tr><td>채팅 / 방 목록</td><td>초당 2 / 초당 1</td><td>GameLoop에서 <code>ERR_RATE_LIMITED</code> 응답</td></tr>
+    <tr><td>동시 접속 · 로그인 실패</td><td>서버 10,000 · ID별 제한</td><td>accept 즉시 닫음 · 같은 ID 반복 시도 거부</td></tr>
+    <tr><td>연결 유지 · 크기</td><td>무응답 60초 · 요청 4KB · 채팅 150B</td><td>세션별 10초 점검 타이머로 정리 · 4KB 초과 요청은 연결 종료, 긴 채팅은 <code>ERR_INVALID_ARGUMENT</code></td></tr>
+  </table>
+  <div class="footer"><span>OZServer — Portfolio</span><span>05 핵심 설계 ③</span></div>
+</div>
+
+<!-- ══════════════════ 06 핵심 설계 4 — 방 게임 ══════════════════ -->
+<div class="page">
+  <div class="section-header"><span class="section-num">06</span><div class="section-dot"></div><span class="section-title">핵심 설계와 코드 ④  방 게임 — 서버 권한 이동 + 틱 동기화</span></div>
+  <p class="desc">
+    방 안에 <strong>대기 → 카운트다운 → 진행 → 결과</strong> 흐름을 가진 최소 게임(60초 코인 줍기, 정원 10명)을 넣었습니다.
+    목적은 컨텐츠가 아니라 룸 서버의 핵심인 <strong>서버가 판정하는 이동</strong>과 <strong>틱 주기 상태 동기화</strong>를 보여 주는 것입니다.
+    규칙은 소켓을 모르는 <code>RoomGame</code> 클래스에 모아 단위 테스트 14개로 검증했습니다.
+  </p>
+
+  <div class="code-card">
+    <div class="code-card-header"><span class="code-card-title">단계 전환은 한 곳 — 매 틱 Update에서만</span><span class="code-card-file">Room/RoomGame.h</span></div>
+    <div class="code-card-body"><pre class="hl">bool Update(Clock::time_point now) {       // 준비·퇴장은 값만 바꾸고, 전환 조건은 여기서만 확인
+    switch (_phase) {
+    case GAME_WAITING:   if (everyone_ready) next = GAME_COUNTDOWN; break;        // 2명 이상 전원 준비
+    case GAME_COUNTDOWN: if (!everyone_ready) next = GAME_WAITING;                // 준비 취소·퇴장
+                         else if (time_up) next = GAME_PLAYING; break;
+    case GAME_PLAYING:   if (!enough_players || time_up) next = GAME_RESULT; break;
+    default:             if (time_up) next = GAME_WAITING; break;                 // 결과 5초 후
+    }
+    if (next != _phase) { ... }                    // 진입 처리(시작 위치, 순위 등) 1회, 이어서 코인 생성
+    return std::exchange(_state_changed, false);   // true면 Room이 S_GameState를 방 전원에게
+}</pre></div>
+  </div>
+
+  <div class="code-card">
+    <div class="code-card-header"><span class="code-card-title">서버 권한 이동 — 이동 거리를 토큰으로 쓰는 버킷</span><span class="code-card-file">Room/RoomGame.h · GameRules.h</span></div>
+    <div class="code-card-body"><pre class="hl">MoveResult TryMove(uint32_t id, float x, float y, uint32_t seq, Clock::time_point now) {
+    Player&amp; p = it-&gt;second;                                       // 클라이언트는 목표 위치만 보냄
+    const bool in_map = std::isfinite(x) &amp;&amp; std::isfinite(y) &amp;&amp; x &gt;= 0 &amp;&amp; x &lt;= GAME_MAP_SIZE &amp;&amp; ...;
+    if (!in_map || !p.move_budget.TryTake(now, std::hypot(x - p.x, y - p.y)))
+        return { ERR_INVALID_MOVE, p.x, p.y };                    // 위치·예산 그대로 + 서버 위치로 보정
+    p.x = x; p.y = y; p.last_seq = seq; p.dirty = true;          // 다음 스냅샷에 포함, 코인 판정도 서버
+    ...
+}
+constexpr RateLimit GAME_MOVE_BUDGET{ MAX_SPEED * 0.5, MAX_SPEED * 1.1 };   // 몰려 도착한 이동은 쌓인 거리로 통과</pre></div>
+  </div>
+
+  <div class="code-card">
+    <div class="code-card-header"><span class="code-card-title">틱 동기화 — 2틱(100ms)마다 바뀐 것만, 직렬화 1회</span><span class="code-card-file">Room/Room.cpp · RoomManager.cpp</span></div>
+    <div class="code-card-body"><pre class="hl">std::string Room::UpdateGame(Clock::time_point now) {
+    if (!_game.Update(now)) return {};                           // 단계·인원 변화 없음
+    const SessionState state = (_game.GetPhase() == GAME_PLAYING) ? InGame : InRoom;
+    for (const auto&amp; [session, id] : _members) session-&gt;SetState(state);   // 이동은 등록의 { InGame }만 허용
+    ...
+    return PacketUtils::Serialize(GAME_STATE, message);
+}
+std::string Room::TakeSnapshot();   // 2틱마다 움직인 플레이어·새/주운 코인만(첫 번째만 전체)
+// RoomManager::Update — 방마다, 보낼 것이 있으면 1회 직렬화한 버퍼를 전원이 공유
+if (std::string s = room-&gt;UpdateGame(now); !s.empty()) room-&gt;Broadcast(std::move(s));
+if (std::string s = room-&gt;TakeSnapshot(); !s.empty()) room-&gt;Broadcast(std::move(s));</pre></div>
+  </div>
+
+  <h3>부하 측정 — game 시나리오 (10명 방, 봇마다 100ms 주기 이동, 10%는 순간이동 시도)</h3>
+  <table>
+    <tr><th>봇</th><th>이동 수신 · 스냅샷 송신 /초</th><th>이동 → 스냅샷 반영 p50 / p99</th><th>정상 이동 거부</th><th>순간이동 거부</th><th>틱 평균</th></tr>
+    <tr><td>1,000</td><td>8,874 · 9,623</td><td>62 / 112 ms</td><td class="good">0 / 55만</td><td class="good">5,500 / 5,500</td><td>1.0 ms</td></tr>
+    <tr><td>3,000</td><td>24,985 · 27,086</td><td>65 / 118 ms</td><td class="good">0 / 170만</td><td>16,987 / 16,988*</td><td>3.3 ms</td></tr>
+    <tr><td><b>6,000</b></td><td>47,348 · 52,953</td><td><b>74 / 144 ms</b></td><td class="good">0 / 364만</td><td>36,583 / 36,609*</td><td>7.8 ms (예산의 16%)</td></tr>
+  </table>
+  <div class="point">스냅샷 주기(100ms) 때문에 저부하에서도 p50이 62ms이고, 6,000명에서는 74ms로 12ms 늘었습니다. 정상 이동은 한 건도 거부되지 않았습니다. <span style="color:#64748b">* 차이는 거부 응답이 집계되지 않은 건(판·측정 종료 시점으로 추정).</span> 측정 중 LoadTest의 room 봇이 게임 알림에 반응해 채팅을 멈추는 결함을 회귀 측정으로 찾아 고쳤습니다.</div>
+  <div class="footer"><span>OZServer — Portfolio</span><span>06 핵심 설계 ④</span></div>
+</div>
+
+<!-- ══════════════════ 07 성능 ══════════════════ -->
+<div class="page">
+  <div class="section-header"><span class="section-num">07</span><div class="section-dot"></div><span class="section-title">성능 측정 — 병목을 찾아 고친 과정</span></div>
+  <p class="desc">자체 부하 봇(LoadTest)으로 서버와 봇을 <strong>같은 PC</strong>에서 실행해 측정했습니다(Release, I/O 4스레드, DB 워커 8). 기준: room 시나리오 = 10명 방, 봇마다 1초에 채팅 1회, 채팅 왕복 p99 200ms 이내면 통과.</p>
+
+  <table>
+    <tr><th style="width:5%">#</th><th style="width:21%">발견한 문제</th><th style="width:30%">원인</th><th style="width:26%">해결</th><th>결과</th></tr>
+    <tr><td>1</td><td><span class="tag tag-bug">결함</span> 1,000명 동시 종료 시 서버 정지</td><td>쓰기 완료 핸들러가 <code>this</code>만 캡처 → 세션 해제 후 접근</td><td>모든 비동기 핸들러가 <code>shared_from_this()</code>로 수명 보장</td><td class="good">재현 조건 반복 재발 0</td></tr>
+    <tr><td>2</td><td><span class="tag tag-perf">성능</span> room 4,000명 실패</td><td>패킷마다 <code>async_write</code> 1회, 송신 처리량 한계 ~2.6만/초</td><td>묶음 송신(scatter-gather) + I/O 스레드 풀</td><td class="good">p99 9,321 → 71ms</td></tr>
+    <tr><td>3</td><td><span class="tag tag-perf">성능</span> 로그인 ~115건/초</td><td>DB 커넥션 1개에서 순차 처리</td><td>DB 워커 풀(워커마다 커넥션)</td><td class="good">~550건/초 (8워커)</td></tr>
+    <tr><td>4</td><td><span class="tag tag-perf">성능</span> 동시 로그인 폭주</td><td>DB에 한꺼번에 몰림, 진행 상황 알 수 없음</td><td>동시 처리 상한 + FIFO 대기열 + 순번 알림</td><td class="good">10,000명까지 순서대로 처리</td></tr>
+    <tr><td>5</td><td><span class="tag tag-arch">구조</span> 로비 1,000명 채팅 시 틱 6.4초</td><td>로비 전원 브로드캐스트 = 초당 100만 건(N²)</td><td>정원 100 채널로 분할</td><td class="good">틱 평균 4.7ms, p99 93ms</td></tr>
+    <tr><td>6</td><td><span class="tag tag-perf">성능</span> 콘솔 출력 비용</td><td><code>std::cout</code> 직접 출력이 I/O·GameLoop 스레드를 막고 여러 스레드 출력이 섞임</td><td>전용 스레드 비동기 로거 + 레벨</td><td class="good">debug에서도 처리량 동일, 섞임 0</td></tr>
+    <tr><td>7</td><td><span class="tag tag-perf">성능</span> 로그인마다 SELECT+UPDATE</td><td>재로그인도 매번 DB 왕복</td><td>Redis 유저 캐시 + login_date 지연 쓰기</td><td class="good">p99 9.4 → 2.5s, DB 쿼리 0</td></tr>
+  </table>
+
+  <h3>최종 측정 (2026-11-19, PC 유휴 상태)</h3>
+  <div class="grid3">
+    <div class="stat"><b>room 6,000</b><span>실패 0 · 왕복 p50 50 / p95 87 / <b style="display:inline;font-size:11px;color:#15803d">p99 114ms</b> · 수신 59,447/초 · 틱 overrun 0</span></div>
+    <div class="stat"><b>churn 300</b><span>접속→로그인→방→퇴장→로그아웃→끊기 반복 <b style="display:inline;font-size:11px;color:#15803d">400 사이클/초</b> · 종료 후 세션·채널 0</span></div>
+    <div class="stat"><b>login 6,000</b><span>동시 로그인 · 캐시 적중 p99 <b style="display:inline;font-size:11px;color:#15803d">2.5s</b> · MySQL SELECT 0 / UPDATE 6</span></div>
+  </div>
+
+  <h3>개선 전 → 후 요약</h3>
+  <table>
+    <tr><th>지표</th><th>개선 전</th><th>개선 후</th></tr>
+    <tr><td>room 통과 인원 (p99 &lt; 200ms)</td><td class="bad">2,000명</td><td class="good">6,000명 (측정 상한)</td></tr>
+    <tr><td>서버 전달량</td><td class="bad">~2.6만 패킷/초</td><td class="good">24.7만 패킷/초 이상 (lobby 500)</td></tr>
+    <tr><td>로그인 처리량</td><td class="bad">~115건/초</td><td class="good">~550건/초 (DB) · 캐시 적중 시 DB 0</td></tr>
+    <tr><td>반복 접속·종료</td><td class="bad">129 사이클/초</td><td class="good">400 사이클/초</td></tr>
+  </table>
+  <p class="desc">측정 중 서버 쪽 숫자는 60초마다 출력되는 <code>[Stats]</code> 한 줄(틱 평균/최대, 초당 메시지, 세션·대기열 수, 레이트리밋 집계, 지연 쓰기 묶음 수)로 함께 확인했습니다. 다른 프로그램이 CPU를 쓰던 측정은 비교 불가로 기록하고 다시 측정했습니다.</p>
+  <div class="footer"><span>OZServer — Portfolio</span><span>07 성능 측정</span></div>
+</div>
+
+<!-- ══════════════════ 08 검증 · 확장 · 실행 ══════════════════ -->
+<div class="page">
+  <div class="section-header"><span class="section-num">08</span><div class="section-dot"></div><span class="section-title">테스트 · 확장성 · 실행</span></div>
+
+  <h3>테스트와 검증</h3>
+  <div class="grid2">
+    <div class="info-box"><strong>단위 테스트 109개 (Google Test)</strong>
+      <ul>
+        <li>패킷 프레이밍(6바이트 헤더, 네트워크 바이트 순서, 크기 상한) · 디스패처(허용 상태·빈도 제한 등록)</li>
+        <li>토큰 버킷 · 키별 제한 · 접속 제한</li>
+        <li>방 게임 규칙: 단계 전환 · 이동 검증(속도·맵·NaN·몰린 패킷) · 델타 스냅샷 · 코인/순위</li>
+        <li>로그인 대기열 · 채널 배정 · 설정 파싱</li>
+        <li>로거 · 틱 통계 · 지연 쓰기 버퍼 · 종료 정책</li>
+        <li>MessageQueue · DB 작업 큐 다중 스레드 동시성(유실·중복·순서)</li>
+      </ul>
+    </div>
+    <div class="info-box"><strong>핸들러 동작 — 실제 연결로 검증</strong>
+      로그인·방·로비 핸들러는 실제 소켓 세션이 필요해 단위 테스트 대신
+      <ul>
+        <li><b>LoadTest</b>: 6,000명 방 채팅·방 게임, 반복 접속·종료, 동시 로그인, 로비 채널, 무응답</li>
+        <li><b>소켓 시나리오</b>: 캐시 적중·만료, Redis 일시 정지, 중복 로그인, 종료 중 요청 거부, 게임 단계·입장 거부·이동 보정</li>
+        <li>측정 후 서버 <code>sessions=0</code> 복귀로 정리 누락 확인</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>새 패킷 추가 — 정해진 순서로 몇 줄</h3>
+  <div class="code-card">
+    <div class="code-card-header"><span class="code-card-title">예: 컨텐츠 패킷을 하나 붙일 때</span><span class="code-card-file">패킷 추가 절차</span></div>
+    <div class="code-card-body"><pre class="hl">// 1) Common.proto: PacketType에 값 추가 (기능별 100단위 블록)    2) XxxPacket.proto: C_Xxx / S_Xxx
+// 3) build.bat 실행 → 서버·클라이언트 proto 폴더에 생성 파일 복사
+// 4) 상태를 가진 Manager에 핸들러 작성 (GameLoop 스레드 전용 → 락 없음)
+// 5) 등록 한 줄 — 파싱·라우팅·허용 상태·빈도 제한·거부 응답이 모두 여기서 결정
+_dispatcher.Register&lt;C_ItemUse, S_ItemUse&gt;(ITEM_USE, { Lobby, InRoom },
+    [this](SessionPtr s, const C_ItemUse&amp; p) { _item_manager.HandleUse(s, p); }, RequestLimit::ItemUse);
+//    새 빈도 제한 종류 = PacketPolicy.h의 enum 값 + REQUEST_RATE_LIMITS 한 줄
+// 6) 상태 코드만 담은 응답은 공통 헬퍼: SendStatus&lt;S_ItemUse&gt;(session, ITEM_USE, code);</pre></div>
+  </div>
+  <p class="desc">핸들러는 항상 GameLoop 스레드에서 실행되므로 새 기능에서 락을 고민할 필요가 없고, DB가 필요하면 작업 큐에 넣고 결과 콜백을 받는 같은 패턴을 씁니다.</p>
+
+  <h3>실행</h3>
+  <table>
+    <tr><th style="width:26%">단계</th><th>방법</th></tr>
+    <tr><td>MySQL + Redis</td><td><code>NetworkServer/docker-compose.yml</code> — <code>.env</code>에 비밀번호 입력 후 <code>docker compose up -d</code> (스키마 <code>db/schema.sql</code> 자동 적용)</td></tr>
+    <tr><td>설정</td><td><code>server.conf.example</code> → <code>server.conf</code> (포트, 스레드 수, 로그 레벨, DB·Redis 접속). 잘못된 키·범위는 시작 시 오류로 종료</td></tr>
+    <tr><td>빌드</td><td>VS 2022 <code>OZServer.sln</code> Release|x64 — 의존성은 vcpkg manifest로 자동 설치 (Boost만 별도)</td></tr>
+    <tr><td>실행</td><td><code>OZServer.exe [io_threads] [db_workers] [log_level]</code></td></tr>
+  </table>
+
+  <h3>알려진 한계와 다음 단계</h3>
+  <ul class="tight">
+    <li><strong>Redis 워커 1개</strong>가 캐시 적중 로그인의 다음 병목 → 파이프라이닝 또는 워커 추가</li>
+    <li><strong>MySQL 재연결 없음</strong>(시작 시 연결만 사용), 지연 쓰기는 비정상 종료 시 최대 1초분 유실 가능</li>
+    <li><strong>인증 · TLS</strong>: 토큰 인증과 로드밸런서 TLS 종료 방향으로 설계만 정리</li>
+    <li><strong>방 게임</strong>: 클라이언트 예측·보간, 지연 보상, 관심 영역(AOI)은 없음 — 물리·충돌이 생기면 틱 단위 시뮬레이션으로 확장</li>
+  </ul>
+  <div class="footer"><span>OZServer — Portfolio</span><span>08 테스트 · 확장성 · 실행</span></div>
+</div>
+
+<!-- ══════════════════ 09 C# ══════════════════ -->
+<div class="page">
+  <div class="section-header"><span class="section-num">09</span><div class="section-dot"></div><span class="section-title">다른 언어 ①  C# 웹소켓 채팅 서버</span></div>
+  <p class="desc">
+    ASP.NET Core WebSocket과 Redis Pub/Sub으로 만든 <strong>채팅 서버</strong>입니다. 서버를 여러 대 띄워도 같은 채널의 유저끼리 대화하며,
+    일반·길드·공지 채널, 길드 채팅 기록, 가챠 알림을 처리합니다. 예전에 작성한 코드의 보안·동시성 문제를 찾아 개선했습니다.
+  </p>
+
+  <svg viewBox="0 0 680 120" width="100%" style="margin:2px 0 4px">
+    <defs><marker id="c9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker></defs>
+    <rect x="8" y="35" width="90" height="50" rx="8" fill="#f8fafc" stroke="#94a3b8"/><text x="53" y="64" text-anchor="middle" font-size="12" font-weight="700" fill="#334155">Clients</text>
+    <rect x="180" y="8" width="190" height="46" rx="8" fill="#f5f3ff" stroke="#8b5cf6"/><text x="275" y="28" text-anchor="middle" font-size="12" font-weight="700" fill="#5b21b6">채팅 서버 A</text><text x="275" y="44" text-anchor="middle" font-size="10" fill="#6d28d9">세션별 수신 · 송신 큐</text>
+    <rect x="180" y="66" width="190" height="46" rx="8" fill="#f5f3ff" stroke="#8b5cf6"/><text x="275" y="86" text-anchor="middle" font-size="12" font-weight="700" fill="#5b21b6">채팅 서버 B</text><text x="275" y="102" text-anchor="middle" font-size="10" fill="#6d28d9">세션별 수신 · 송신 큐</text>
+    <rect x="460" y="8" width="212" height="46" rx="8" fill="#fef2f2" stroke="#f87171"/><text x="566" y="28" text-anchor="middle" font-size="12" font-weight="700" fill="#991b1b">채팅 Redis</text><text x="566" y="44" text-anchor="middle" font-size="10" fill="#b91c1c">Pub/Sub · 길드 기록(Stream)</text>
+    <rect x="460" y="66" width="212" height="46" rx="8" fill="#eff6ff" stroke="#60a5fa"/><text x="566" y="86" text-anchor="middle" font-size="12" font-weight="700" fill="#1e40af">게임 Redis</text><text x="566" y="102" text-anchor="middle" font-size="10" fill="#1d4ed8">로그인 세션 (인증)</text>
+    <g stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#c9)"><path d="M98,52 L178,31" marker-start="url(#c9)"/><path d="M98,68 L178,89" marker-start="url(#c9)"/><path d="M372,26 H458" marker-start="url(#c9)"/><path d="M372,80 L458,44" marker-start="url(#c9)"/><path d="M372,42 L458,78"/><path d="M372,96 H458"/></g>
+  </svg>
+
+  <div class="code-card">
+    <div class="code-card-header"><span class="code-card-title">채널 구독 — 채널마다 Redis 구독은 1번, 마지막 유저가 나가면 해제</span><span class="code-card-file">C#/RedisManager.cs</span></div>
+    <div class="code-card-body"><pre class="hl">var state = _channels.GetOrAdd(channel, _ =&gt; new ChannelState());
+await state.Gate.WaitAsync();                          // 같은 채널의 구독 · 해제만 직렬화
+try {
+    if (state.Closed) continue;                        // 해제된 채널이면 새로 만든다
+    if (state.Queue == null) {
+        state.Queue = await Subscriber.SubscribeAsync(RedisChannel.Literal(channel));
+        state.Queue.OnMessage(m =&gt; Deliver(state, m.Message.ToString()));   // 채널 안 순서 보장
+    }
+    state.Members[id] = new Member(user, send);
+    return;
+}
+finally { state.Gate.Release(); }</pre></div>
+  </div>
+  <div class="code-card">
+    <div class="code-card-header"><span class="code-card-title">느린 클라이언트 — 송신 큐 상한을 넘으면 끊어 메모리 보호</span><span class="code-card-file">C#/Chat.cs</span></div>
+    <div class="code-card-body"><pre class="hl">private readonly Channel&lt;string&gt; _sends = Channel.CreateBounded&lt;string&gt;(
+    new BoundedChannelOptions(MaxPendingSends) { SingleReader = true });   // 세션당 256개
+
+private void Enqueue(string message) {
+    if (!_sends.Writer.TryWrite(message) &amp;&amp; _sends.Writer.TryComplete()) _socket.Abort();
+}</pre></div>
+  </div>
+
+  <table>
+    <tr><th style="width:15%">구분</th><th style="width:40%">찾은 문제</th><th>개선</th></tr>
+    <tr><td>보안</td><td>UID·이름·길드를 요청 헤더 그대로 신뢰</td><td class="good">게임 서버 세션(Redis)에서만 읽고, 인증 후 연결 수락</td></tr>
+    <tr><td>보안</td><td>크기·빈도 제한 없음, 예외 내용을 클라이언트에 전송</td><td class="good">4KB · 초당 2회 · 반복 위반 종료, 결과 코드만 응답</td></tr>
+    <tr><td>동시성</td><td>채널 중복 구독 가능, 메시지 순서 미보장</td><td class="good">채널별 1회 구독 + 순차 처리</td></tr>
+    <tr><td>데이터</td><td>길드 기록이 초 단위 키라 같은 초에 덮어씀</td><td class="good">Redis Stream (약 1,000건 · 7일)</td></tr>
+    <tr><td>안정성</td><td>현재 .NET에서 <code>SendAsync</code> 예외, 빈 채널 구독 누수</td><td class="good">ASP.NET Core로 교체, 빈 채널 해제</td></tr>
+  </table>
+  <div class="point"><strong>검증</strong>: 서버 2대와 Redis로 실제 연결 시험 — 서버 간 채팅, 사칭·권한 거부, 잘못된 요청, 300명 동시 접속(메시지 각 1회 수신), 공지 200건 순서, 느린 클라이언트 차단, <strong>Redis 중단 → 복구 후 정상</strong>, 정상 종료 알림까지 모두 통과.</div>
+  <div class="footer"><span>OZServer — Portfolio</span><span>09 C# 채팅 서버</span></div>
+</div>
+
+<!-- ══════════════════ 10 Python · PHP ══════════════════ -->
+<div class="page">
+  <div class="section-header"><span class="section-num">10</span><div class="section-dot"></div><span class="section-title">다른 언어 ②  Python · PHP 코드 샘플</span></div>
+  <p class="desc">게임 컨텐츠에서 자주 쓰는 구조를 작게 다시 작성한 샘플입니다. 핵심은 <strong>확인 · 차감 · 지급을 한 트랜잭션으로 묶는 것</strong>과, 새 컨텐츠를 <strong>설정만 추가해 붙이는 구조</strong>입니다.</p>
+
+  <h3>Python — 게임 컨텐츠</h3>
+  <table>
+    <tr><th style="width:17%">파일</th><th>내용</th></tr>
+    <tr><td><b>quest.py</b></td><td>일일·주간·일회성 퀘스트. 게임 행동 1건을 조건이 맞는 모든 퀘스트에 반영하고, 기간이 바뀌면 자동 초기화</td></tr>
+    <tr><td><b>summon.py</b></td><td>재화·티켓·무료 소환, 확률 뽑기. 도중에 소환 레벨이 오르면 다음 뽑기부터 새 확률 적용</td></tr>
+    <tr><td><b>event.py</b></td><td>랭킹과 보상, 무료·유료 패스, 교환 상점. 이벤트는 값만 정의하고 기능은 공유</td></tr>
+    <tr><td><b>skill.py</b></td><td>스킬 획득·강화·장착. 소유 여부, 중복 장착, 재화 검증</td></tr>
+  </table>
+
+  <div class="code-card">
+    <div class="code-card-header"><span class="code-card-title">재화 차감 — 잔액 확인과 차감을 UPDATE 하나로 (동시 요청에도 음수 없음)</span><span class="code-card-file">Python/common.py</span></div>
+    <div class="code-card-body"><pre class="hl">if count and not tx.execute('UPDATE user_item SET count = count - ? WHERE user_id = ? AND item_id = ? AND count &gt;= ?',
+                            count, user_id, item_id, count):
+    raise GameError(Result.NOT_ENOUGH)                 # 예외가 나면 트랜잭션 전체 롤백</pre></div>
+  </div>
+  <div class="code-card">
+    <div class="code-card-header"><span class="code-card-title">퀘스트 — 기간이 바뀐 진행도 초기화까지 한 번에 처리</span><span class="code-card-file">Python/quest.py</span></div>
+    <div class="code-card-body"><pre class="hl">rows = [(user_id, quest.quest_id, self.period(quest.cycle, today), min(count, quest.goal), quest.goal)
+        for quest in self._quests.values()
+        if quest.action is action and quest.target in (0, target) and count &gt; 0]
+tx.execute_many('INSERT INTO user_quest VALUES (?1, ?2, ?3, ?4, 0) ON CONFLICT (user_id, quest_id) DO UPDATE SET '
+    'progress = CASE WHEN period = excluded.period THEN MIN(progress + excluded.progress, ?5) '
+    'ELSE excluded.progress END, ...', rows)</pre></div>
+  </div>
+
+  <h3>PHP — 게임 로직과 운영 도구 (PHP 8.1+)</h3>
+  <table>
+    <tr><th style="width:27%">파일</th><th>내용</th></tr>
+    <tr><td><b>CardService.php</b></td><td>중복 카드 처리: 강화 → 상위 카드 승급 → 경험치 → 골드. 승급으로 사라진 카드가 장착 중이면 새 카드로 교체</td></tr>
+    <tr><td><b>BattleResultService.php</b></td><td>전투 정산: 중복 정산 방지, 서버 시간으로 플레이 시간·점수 검증, 레벨업과 보상</td></tr>
+    <tr><td><b>AdminLookup.php</b></td><td>운영 도구 조회 화면을 설정으로 정의. 권한 확인, 허용된 컬럼만 검색·정렬, 값은 바인딩</td></tr>
+  </table>
+  <div class="code-card">
+    <div class="code-card-header"><span class="code-card-title">카드 획득 — 강화 한도에 닿으면 상위 카드로 바꿔 다시 판정</span><span class="code-card-file">PHP/CardService.php</span></div>
+    <div class="code-card-body"><pre class="hl">if ($owned === null) { return new CardResult(new Card($cardId, 0, min($exp, $info-&gt;maxExp)), 0, $removed); }
+if ($owned-&gt;enchant &lt; $info-&gt;maxEnchant) { /* 강화 + 1 */ }
+if ($info-&gt;promotesTo === null) { return $this-&gt;convert($owned, $info, $exp, $removed); }   // 경험치 · 골드
+$removed[] = $cardId;
+$exp += $owned-&gt;exp;
+$cardId = $info-&gt;promotesTo;                              // 상위 카드로 다시 판정 (순환은 예외)</pre></div>
+  </div>
+  <div class="footer"><span>OZServer — Portfolio</span><span>10 Python · PHP</span></div>
+</div>
+
+<script>
+// 코드 블록 간단 하이라이트(주석·문자열·키워드·타입·숫자)
+(function () {
+  const KW = new Set(['void','const','return','if','for','auto','template','typename','using','struct','class','size_t','bool','true','false','try','catch','this','static_cast','new','int64_t','uint32_t','double','var','await','private','readonly','finally','if','with','as','while','break','continue','isset']);
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  document.querySelectorAll('pre.hl').forEach(pre => {
+    const text = pre.textContent;
+    const re = /(\/\/[^\n]*|(?:^|[ \t])# [^\n]*|\/\*[\s\S]*?\*\/)|("(?:[^"\\\n]|\\.)*")|\b(\d+(?:\.\d+)?)\b|\b([A-Za-z_]\w*)\b/g;
+    let out = '', last = 0, m;
+    while ((m = re.exec(text))) {
+      out += esc(text.slice(last, m.index));
+      if (m[1]) out += '<span class="cm">' + esc(m[1]) + '</span>';
+      else if (m[2]) out += '<span class="st">' + esc(m[2]) + '</span>';
+      else if (m[3]) out += '<span class="num">' + m[3] + '</span>';
+      else if (KW.has(m[4])) out += '<span class="kw">' + m[4] + '</span>';
+      else if (/^(std|boost|protobuf|mysqlx)$/.test(m[4]) || /^[A-Z][A-Za-z]*[a-z][A-Za-z]*$/.test(m[4]) && /^(Session|Message|Raw|Incoming|Packet|Cached|Write|Db|Buffer|Clock|C_|S_|Item)/.test(m[4]))
+        out += '<span class="ty">' + m[4] + '</span>';
+      else out += m[4];
+      last = re.lastIndex;
+    }
+    pre.innerHTML = out + esc(text.slice(last));
+  });
+})();
+</script>
+</body>
+</html>

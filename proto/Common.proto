@@ -1,0 +1,70 @@
+syntax = "proto3";
+package protobuf;
+
+// 패킷 타입 번호는 기능별 100 단위로 구분한다(헤더 type 필드는 2바이트). 새 타입은 해당 기능 범위에 추가하고 기존 번호는 바꾸지 않는다.
+//   0~99 공통/연결, 100~199 유저, 200~299 방, 300~399 채팅, 400~499 로비/채널, 500~599 방 게임, 600~ 예약(600 아이템)
+enum PacketType {
+    UNKNOWN            = 0;
+    PROTOCOL_ERROR     = 1;     // 서버→클라 전용: 미등록 타입/파싱 실패/패킷 빈도 초과 알림(S_ProtocolError)
+    HEARTBEAT          = 2;     // 클라→서버 전용: 연결 유지(C_Heartbeat, 30초마다). 서버는 I/O 스레드에서 받자마자 버림(응답 없음)
+
+    USER_LOGIN         = 100;
+    USER_LOGOUT        = 101;
+    USER_INFO_UPDATE   = 102;
+    USER_LIST          = 103;
+    LOGIN_QUEUE        = 104;   // 서버→클라 전용: 로그인 대기 순번 알림(S_LoginQueue)
+
+    ROOM_CREATE        = 200;
+    ROOM_JOIN          = 201;
+    ROOM_LEAVE         = 202;
+    ROOM_LIST          = 203;
+    ROOM_USER_LIST     = 204;
+
+    CHAT_MESSAGE       = 300;
+
+    LOBBY_CHANNEL_MOVE = 400;   // 로비 채널 이동(C_ChannelMove / S_ChannelMove, LobbyPacket.proto)
+
+    GAME_READY         = 500;   // 준비/취소(C_GameReady / S_GameReady, GamePacket.proto)
+    GAME_STATE         = 501;   // 서버→클라 전용: 단계 전환·인원/준비 수(S_GameState)
+    GAME_MOVE          = 502;   // 이동(C_GameMove / S_GameMove — 응답은 거부 시에만)
+    GAME_SNAPSHOT      = 503;   // 서버→클라 전용: 진행 중 위치·점수·코인 델타(S_GameSnapshot)
+}
+
+// 모든 응답(S_*)의 status_code 필드에서 공용으로 쓰는 결과 코드
+enum StatusCode {
+    // 0~99 공통(모든 응답)
+    OK                    = 0;
+    ERR_UNKNOWN           = 1;    // 기타(서버 내부 오류 등)
+    ERR_INVALID_STATE     = 2;    // 허용 상태(FSM) 가드 거부 — 핸들러 등록 시 지정
+    ERR_INVALID_ARGUMENT  = 3;    // 빈 값 / 길이 초과 등 잘못된 입력
+    ERR_UNKNOWN_PACKET    = 4;    // 서버에 등록되지 않은 패킷 타입
+    ERR_MALFORMED_PACKET  = 5;    // body 역직렬화 실패(손상/조작된 패킷)
+    ERR_RATE_LIMITED      = 6;    // 요청 빈도 초과(패킷/채팅/로그인 레이트리밋, 잠시 후 재시도)
+    ERR_SERVER_SHUTTING_DOWN = 7; // 서버 종료 중: 새 요청은 처리하지 않음(잠시 뒤 연결이 닫힘)
+
+    // 100~199 유저
+    ERR_ALREADY_LOGGED_IN = 100;  // 같은 uuid가 이미 접속 중이거나 처리 중
+    ERR_SERVER_BUSY       = 101;  // 로그인 대기열이 가득 참(잠시 후 재시도)
+
+    // 200~299 방
+    ERR_ALREADY_IN_ROOM   = 200;  // 이미 방에 참가 중인데 생성/참가 시도
+    ERR_ROOM_NOT_FOUND    = 201;  // 존재하지 않는 room_id로 참가/조회 시도
+    ERR_NOT_IN_ROOM       = 202;  // 방에 없는데 나가기/조회 시도
+    ERR_ROOM_FULL         = 203;  // 방 정원(10) 초과
+
+    // 400~499 로비/채널
+    ERR_CHANNEL_NOT_FOUND = 400;  // 없는 채널 번호(1~채널 수만 이동 가능, 새 채널은 로그인 배정으로만 생김)
+    ERR_CHANNEL_FULL      = 401;  // 대상 채널 정원(100) 초과
+    ERR_SAME_CHANNEL      = 402;  // 이미 그 채널
+
+    // 500~599 방 게임
+    ERR_GAME_IN_PROGRESS  = 500;  // 카운트다운/진행 중인 방에 입장 시도
+    ERR_INVALID_MOVE      = 501;  // 이동 거부(속도 초과, 맵 밖, 잘못된 좌표) — S_GameMove에 서버 위치
+}
+
+// 프로토콜 위반(미등록 타입 / 파싱 실패) 시 서버가 보내는 공용 에러 알림.
+// 누적 위반이 한도(PacketPolicy.h의 MAX_PROTOCOL_VIOLATIONS)에 도달하면 서버가 연결을 끊는다.
+message S_ProtocolError {
+    StatusCode status_code  = 1;  // ERR_UNKNOWN_PACKET / ERR_MALFORMED_PACKET
+    uint32     request_type = 2;  // 문제가 된 요청의 PacketType 값
+}

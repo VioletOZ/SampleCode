@@ -1,0 +1,76 @@
+syntax = "proto3";
+package protobuf;
+
+import "Common.proto";
+import "UserPacket.proto";
+
+enum RoomType {
+	ROOM_PRIVATE = 0;
+	ROOM_PUBLIC = 1;
+	// // 0 : 비공개, 1: 공개, 2 ~ : 다른룸 추후 ROOM 타입에 따라 값만 추가
+}
+
+message RoomInfo {
+	uint32 room_id = 1;
+	RoomType room_type = 2;
+	string room_name = 3;
+}
+
+message C_RoomPacket {	
+	string user_id = 1;
+	UserInfo user_info = 2;
+}
+
+message S_RoomPacket {		
+	StatusCode status_code = 1;
+}
+
+
+message C_RoomInfo {	
+	RoomInfo room_info = 1;
+}
+
+message S_RoomInfo {
+	StatusCode status_code = 1;
+	RoomInfo room_info = 2;
+	repeated UserInfo user_list = 3;
+	uint32 channel = 4;				// 로비 유저 목록(room_id 0)일 때 내 채널
+}
+
+// 방 목록은 방 번호 순 10개 단위 페이지(ROOM_LIST_PAGE_SIZE, PacketPolicy.h)
+message C_RoomList {
+	uint32 page = 1;				// 1부터. 0이면 1페이지
+}
+
+message S_RoomList {
+	StatusCode status_code = 1;
+	repeated RoomInfo room_list = 2;
+	uint32 page = 3;				// 실제로 보낸 페이지(요청이 마지막 페이지보다 크면 마지막 페이지)
+	uint32 total_pages = 4;			// 방이 없으면 0
+	uint32 total_rooms = 5;
+}
+
+message C_RoomCreate {
+	RoomType room_type = 1;
+}
+
+message S_RoomCreate {
+	StatusCode status_code = 1;
+	RoomInfo room_info = 2;
+}
+
+message C_RoomJoin {
+	uint32 room_id = 1;
+}
+
+message S_RoomJoin {
+	StatusCode status_code = 1;
+	RoomInfo room_info = 2;
+}
+
+message C_RoomLeave {
+}
+
+message S_RoomLeave {
+	StatusCode status_code = 1;
+}

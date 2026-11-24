@@ -1,0 +1,32 @@
+syntax = "proto3";
+package protobuf;
+
+import "UserPacket.proto";
+
+enum ChatType {
+	CHAT_UNKNOWN = 0;
+	CHAT_LOBBY = 1;
+	// 추후 CHAT_GAME, CHAT_DUNGEON 등 값만 추가
+	CHAT_ROOM = 2;
+}
+
+message C_ChatPacket {
+	int32 status_code = 1;
+	// 채팅 구역 구분용
+	ChatType chat_type = 2;
+	UserInfo user_info = 3;
+	string message = 4;
+}
+
+message S_ChatPacket {
+	int32 status_code = 1;
+}
+
+message C_ChatWhisper {
+	UserInfo user_info = 1;
+	UserInfo target_info = 2;
+}
+
+message S_ChatWhisper {
+	int32 status_code = 1;
+}

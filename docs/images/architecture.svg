@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 690" font-family="'Malgun Gothic','Noto Sans KR',sans-serif">
+<defs><marker id="k" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker><marker id="g" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker></defs>
+<rect width="1260" height="690" fill="#ffffff"/>
+<text x="34" y="44" font-size="22" font-weight="700" fill="#0f172a" text-anchor="start">OZServer 구성도</text>
+<path d="M900,38 H942" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)"/>
+<text x="952" y="43" font-size="13" font-weight="400" fill="#475569" text-anchor="start">요청 · 작업</text>
+<path d="M1060,38 H1102" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#g)"/>
+<text x="1112" y="43" font-size="13" font-weight="400" fill="#475569" text-anchor="start">송신 · 결과</text>
+<rect x="34" y="150" width="150" height="150" rx="14" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6"/>
+<text x="109" y="200" font-size="18" font-weight="700" fill="#334155" text-anchor="middle">Clients</text>
+<text x="109" y="228" font-size="13" font-weight="400" fill="#475569" text-anchor="middle">헤더 6B + protobuf</text>
+<text x="109" y="252" font-size="13" font-weight="400" fill="#475569" text-anchor="middle">30초 하트비트</text>
+<rect x="250" y="80" width="270" height="290" rx="14" fill="#fff7ed" stroke="#fb923c" stroke-width="1.6"/>
+<text x="385" y="112" font-size="17" font-weight="700" fill="#9a3412" text-anchor="middle">I/O 스레드 풀 (기본 4)</text>
+<text x="385" y="134" font-size="13" font-weight="400" fill="#c2410c" text-anchor="middle">Boost.Asio</text>
+<rect x="270" y="152" width="230" height="200" rx="10" fill="#ffffff" stroke="#fdba74" stroke-width="1.6"/>
+<text x="385" y="180" font-size="15" font-weight="700" fill="#334155" text-anchor="middle">Session · 세션별 strand</text>
+<text x="290" y="210" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  헤더 → 바디 2단계 수신</text>
+<text x="290" y="237" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  패킷 빈도 제한 (초당 20)</text>
+<text x="290" y="264" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  무응답 · 미로그인 타임아웃</text>
+<text x="290" y="291" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  묶음 송신 (최대 64개)</text>
+<text x="290" y="318" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  미전송 1MB 초과 시 종료</text>
+<path d="M194,225 H260" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)" marker-start="url(#k)"/>
+<rect x="580" y="130" width="130" height="84" rx="14" fill="#fefce8" stroke="#eab308" stroke-width="1.6"/>
+<text x="645" y="164" font-size="15" font-weight="700" fill="#854d0e" text-anchor="middle">MessageQueue</text>
+<text x="645" y="188" font-size="13" font-weight="400" fill="#a16207" text-anchor="middle">MPSC · swap</text>
+<path d="M520,172 H572" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)"/>
+<text x="548" y="160" font-size="12.5" font-weight="600" fill="#475569" text-anchor="middle">Push</text>
+<path d="M710,172 H762" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)"/>
+<text x="736" y="160" font-size="12.5" font-weight="600" fill="#475569" text-anchor="middle">PopAll</text>
+<rect x="770" y="80" width="460" height="290" rx="14" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="1.6"/>
+<text x="1000" y="112" font-size="17" font-weight="700" fill="#5b21b6" text-anchor="middle">GameLoop 스레드 (1)</text>
+<text x="1000" y="134" font-size="13" font-weight="400" fill="#6d28d9" text-anchor="middle">20 TPS · 게임 상태 전담 · 락 없음</text>
+<rect x="790" y="152" width="188" height="200" rx="10" fill="#ffffff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="884" y="180" font-size="15" font-weight="700" fill="#334155" text-anchor="middle">패킷 처리 순서</text>
+<text x="808" y="210" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">1.  미등록 타입 확인</text>
+<text x="808" y="237" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">2.  종료 중이면 거부</text>
+<text x="808" y="264" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">3.  허용 상태 (기본 거부)</text>
+<text x="808" y="291" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">4.  요청 빈도 제한</text>
+<text x="808" y="318" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">5.  핸들러 호출</text>
+<rect x="1014" y="152" width="196" height="200" rx="10" fill="#ffffff" stroke="#c4b5fd" stroke-width="1.6"/>
+<text x="1110" y="180" font-size="15" font-weight="700" fill="#334155" text-anchor="middle">Manager</text>
+<text x="1026" y="210" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  User   로그인 · 대기열</text>
+<text x="1026" y="237" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  Lobby  채널 (정원 100)</text>
+<text x="1026" y="264" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  Room   방 · 채팅</text>
+<text x="1026" y="291" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  RoomGame  이동 검증</text>
+<text x="1026" y="318" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  10Hz 델타 스냅샷</text>
+<path d="M978,252 H1006" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)"/>
+<path d="M770,310 H528" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#g)"/>
+<rect x="557" y="288" width="181" height="20" rx="5" fill="#ffffff"/>
+<text x="648" y="302" font-size="12.5" font-weight="600" fill="#15803d" text-anchor="middle">SendPacket / Broadcast</text>
+<rect x="440" y="425" width="250" height="40" rx="20" fill="#eff6ff" stroke="#60a5fa" stroke-width="1.6"/>
+<text x="565" y="450" font-size="14.5" font-weight="700" fill="#1e40af" text-anchor="middle">DbJobQueue</text>
+<rect x="770" y="425" width="230" height="40" rx="20" fill="#fef2f2" stroke="#f87171" stroke-width="1.6"/>
+<text x="885" y="450" font-size="14.5" font-weight="700" fill="#991b1b" text-anchor="middle">RedisJobQueue</text>
+<rect x="1085" y="425" width="145" height="40" rx="20" fill="#f0fdf4" stroke="#4ade80" stroke-width="1.6"/>
+<text x="1157" y="450" font-size="14.5" font-weight="700" fill="#166534" text-anchor="middle">DbResultQueue</text>
+<path d="M810,370 V396 H565 V417" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)"/>
+<path d="M885,370 V417" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)"/>
+<path d="M1157,425 V378" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#g)"/>
+<text x="1145" y="405" font-size="12.5" font-weight="600" fill="#15803d" text-anchor="end">다음 틱 콜백</text>
+<rect x="440" y="500" width="250" height="120" rx="14" fill="#eff6ff" stroke="#60a5fa" stroke-width="1.6"/>
+<text x="565" y="530" font-size="15" font-weight="700" fill="#1e40af" text-anchor="middle">DB 워커 풀 (8) + 지연 쓰기 (1)</text>
+<text x="462" y="558" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  워커마다 커넥션 1개</text>
+<text x="462" y="581" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  UserTable (모델 + 쿼리)</text>
+<text x="462" y="604" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  login_date 묶음 갱신</text>
+<rect x="770" y="500" width="230" height="120" rx="14" fill="#fef2f2" stroke="#f87171" stroke-width="1.6"/>
+<text x="885" y="530" font-size="15" font-weight="700" fill="#991b1b" text-anchor="middle">Redis 워커 (1)</text>
+<text x="792" y="558" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  유저 캐시 (TTL 1일)</text>
+<text x="792" y="581" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  장애 시 DB로 계속</text>
+<text x="792" y="604" font-size="13.5" font-weight="400" fill="#475569" text-anchor="start">·  미적중 → DB 조회</text>
+<path d="M565,465 V492" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)"/>
+<path d="M885,465 V492" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)"/>
+<path d="M262,522 a60.0,12 0 0 1 120,0 v76 a60.0,12 0 0 1 -120,0 z" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.6"/>
+<path d="M262,522 a60.0,12 0 0 0 120,0" fill="none" stroke="#1d4ed8" stroke-width="1.6"/>
+<text x="322.0" y="570.0" font-size="15" font-weight="700" fill="#1d4ed8" text-anchor="middle">MySQL</text>
+<text x="322.0" y="589.0" font-size="11.5" font-weight="400" fill="#64748b" text-anchor="middle">원본 데이터</text>
+<path d="M430,560 H392" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)" marker-start="url(#k)"/>
+<path d="M1045,522 a42.0,12 0 0 1 84,0 v76 a42.0,12 0 0 1 -84,0 z" fill="#fee2e2" stroke="#b91c1c" stroke-width="1.6"/>
+<path d="M1045,522 a42.0,12 0 0 0 84,0" fill="none" stroke="#b91c1c" stroke-width="1.6"/>
+<text x="1087.0" y="570.0" font-size="15" font-weight="700" fill="#b91c1c" text-anchor="middle">Redis</text>
+<text x="1087.0" y="589.0" font-size="11.5" font-weight="400" fill="#64748b" text-anchor="middle">캐시</text>
+<path d="M1008,560 H1036" fill="none" stroke="#475569" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#k)" marker-start="url(#k)"/>
+<path d="M565,620 V652 H1157 V473" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#g)"/>
+<path d="M885,620 V652" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-dasharray="7 5"/>
+<rect x="710" y="643" width="29" height="20" rx="5" fill="#ffffff"/>
+<text x="725" y="657" font-size="12.5" font-weight="600" fill="#15803d" text-anchor="middle">결과</text>
+</svg>

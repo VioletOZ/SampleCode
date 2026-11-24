@@ -1,0 +1,24 @@
+syntax = "proto3";
+package protobuf;
+
+message ItemPacket {
+	enum PacketType {
+		UNKNOWN = 0;
+		LOGIN_REQUEST = 1;
+		LOGIN_RESPONSE = 2;		
+		LOGOUT_REQUEST = 3;
+		USER_INFO_UPDATE = 4;
+	}
+	
+	PacketType type = 1;				// 패킷 타입
+	
+	oneof payload {
+		int32 status_code = 2;
+		string message = 3;
+		ItemInfo info = 4;
+	}
+}
+message ItemInfo {
+	uint32 id = 1;
+	string name = 2;
+}
